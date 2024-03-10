@@ -13,14 +13,16 @@ endif()
 
 add_subdirectory("vendor/glfw-3.4")
 
+
 project ("DazaiRenderer")
 set(CMAKE_CXX_STANDARD 20)
 
 # Define MY_SOURCES to be a list of all the source files for my project
 file(GLOB_RECURSE MY_SOURCES CONFIGURE_DEPENDS "${CMAKE_CURRENT_SOURCE_DIR}/src/*.cpp")
 
-add_executable (DazaiRenderer "${MY_SOURCES}" "include/glad/glad.h" "src/glad.c") #if lib is not with cmake
+file(COPY ${CMAKE_SOURCE_DIR}/resources DESTINATION ${CMAKE_BINARY_DIR})
 
+add_executable (DazaiRenderer "${MY_SOURCES}" "include/glad/glad.h" "src/glad.c") #if lib is not with cmake
 
 target_include_directories(DazaiRenderer PUBLIC "${CMAKE_CURRENT_SOURCE_DIR}/include/")
 
