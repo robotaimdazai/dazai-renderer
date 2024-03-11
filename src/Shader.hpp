@@ -1,6 +1,10 @@
 #pragma once
 #include <iostream>
 #include <glad/glad.h>
+#include <glad/glad.h>
+#include "util/FileSystem.hpp"
+#include <iostream>
+
 
 namespace DazaiEngine 
 {
@@ -9,12 +13,15 @@ namespace DazaiEngine
 
 	public:
 		Shader() = default;
-		Shader(const std::string& path, unsigned int shaderType);
-		auto id() -> unsigned int;
+		Shader(const std::string& vertPath, const std::string& fragPath);
+		~Shader();
+		auto bind() -> void;
+		auto unbind()->void;
 		auto destroy()->void;
+		auto id() -> unsigned int;
 
 	private:
-		unsigned int m_shader_id;
+		unsigned int mId = 0;
 	};
 }
 

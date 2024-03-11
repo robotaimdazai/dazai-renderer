@@ -17,9 +17,8 @@ namespace DazaiEngine
                 try
                 {
            
-                    std::ifstream stream(path); // Use std::ifstream for reading files
-               
-                    std::cout << path << std::endl;
+                    std::ifstream stream(path);
+            
                     if (!stream.is_open())
                     {
                         std::cout << "FileSystem:: Can't open file" << std::endl;
