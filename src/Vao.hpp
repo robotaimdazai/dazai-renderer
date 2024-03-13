@@ -9,7 +9,7 @@ namespace DazaiEngine
 	public:
 		Vao();
 
-		auto linkVbo(Vbo& vbo, GLuint layout) -> void;
+		auto linkAttrib(Vbo& vbo, GLuint layout, GLuint numComponents, GLenum type, GLsizeiptr stride, void* offset) -> void;
 		auto id() -> unsigned int;
 		auto bind() -> void;
 		auto unBind() -> void;

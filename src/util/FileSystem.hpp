@@ -3,9 +3,6 @@
 #include <sstream>
 #include <fstream>
 
-
-
-
 namespace DazaiEngine 
 {
   
@@ -17,7 +14,9 @@ namespace DazaiEngine
                 try
                 {
            
-                    std::ifstream stream(path);
+                    auto resolvedPath = RESOURCES + path;
+                    std::cout << resolvedPath << std::endl;
+                    std::ifstream stream(resolvedPath);
             
                     if (!stream.is_open())
                     {

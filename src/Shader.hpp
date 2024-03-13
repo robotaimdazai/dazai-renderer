@@ -19,6 +19,7 @@ namespace DazaiEngine
 		auto unbind()->void;
 		auto destroy()->void;
 		auto id() -> unsigned int;
+		auto setFloat(const char* name, GLfloat value) -> void;
 
 	private:
 		unsigned int mId = 0;

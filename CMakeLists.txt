@@ -3,6 +3,7 @@
 #
 cmake_minimum_required (VERSION 3.8)
 find_package(OpenGL REQUIRED)
+set(DEVELOPMENT_BUILD true) # set accordingly
 
 # Enable Hot Reload for MSVC compilers if supported.
 if (POLICY CMP0141)
@@ -12,15 +13,24 @@ endif()
 
 
 add_subdirectory("vendor/glfw-3.4")
-
-
 project ("DazaiRenderer")
 set(CMAKE_CXX_STANDARD 20)
+
+
+
+if(DEVELOPMENT_BUILD)
+	set(RESOURCES_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/resources/")
+else()
+	set(RESOURCES_DIRECTORY "resources/")
+endif()
+
+
+add_definitions(-DRESOURCES="${RESOURCES_DIRECTORY}")
 
 # Define MY_SOURCES to be a list of all the source files for my project
 file(GLOB_RECURSE MY_SOURCES CONFIGURE_DEPENDS "${CMAKE_CURRENT_SOURCE_DIR}/src/*.cpp")
 
-file(COPY ${CMAKE_SOURCE_DIR}/resources DESTINATION ${CMAKE_BINARY_DIR})
+#file(COPY ${CMAKE_SOURCE_DIR}/resources DESTINATION ${CMAKE_BINARY_DIR})
 
 add_executable (DazaiRenderer "${MY_SOURCES}" "include/glad/glad.h" "src/glad.c") #if lib is not with cmake
 
