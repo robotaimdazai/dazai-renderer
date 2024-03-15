@@ -2,7 +2,7 @@
 #include <iostream>
 #include <glad/glad.h>
 #include <glad/glad.h>
-#include "util/FileSystem.hpp"
+#include "../util/FileSystem.hpp";
 #include <iostream>
 
 
@@ -20,6 +20,7 @@ namespace DazaiEngine
 		auto destroy()->void;
 		auto id() -> unsigned int;
 		auto setFloat(const char* name, GLfloat value) -> void;
+		auto setInt(const char* name, GLint value) -> void;
 
 	private:
 		unsigned int mId = 0;

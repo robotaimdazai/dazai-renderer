@@ -60,6 +60,11 @@ namespace DazaiEngine
 		GLuint uniformId = glGetUniformLocation(mId,name);
 		glUniform1f(uniformId,value);
 	}
+	auto Shader::setInt(const char* name, GLint value) -> void
+	{
+		GLuint uniformId = glGetUniformLocation(mId, name);
+		glUniform1i(uniformId, value);
+	}
 	auto Shader::bind() -> void
 	{
 		glUseProgram(mId);

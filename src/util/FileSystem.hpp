@@ -2,6 +2,7 @@
 #include <iostream>
 #include <sstream>
 #include <fstream>
+#include "stb/stb_image.h"
 
 namespace DazaiEngine 
 {
@@ -13,9 +14,8 @@ namespace DazaiEngine
             {
                 try
                 {
-           
                     auto resolvedPath = RESOURCES + path;
-                    std::cout << resolvedPath << std::endl;
+                    //std::cout << resolvedPath << std::endl;
                     std::ifstream stream(resolvedPath);
             
                     if (!stream.is_open())
@@ -33,6 +33,7 @@ namespace DazaiEngine
                     return "";
                 }
             }
+
 
 	};
 }

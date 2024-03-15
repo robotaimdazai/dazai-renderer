@@ -32,7 +32,7 @@ file(GLOB_RECURSE MY_SOURCES CONFIGURE_DEPENDS "${CMAKE_CURRENT_SOURCE_DIR}/src/
 
 #file(COPY ${CMAKE_SOURCE_DIR}/resources DESTINATION ${CMAKE_BINARY_DIR})
 
-add_executable (DazaiRenderer "${MY_SOURCES}" "include/glad/glad.h" "src/glad.c") #if lib is not with cmake
+add_executable (DazaiRenderer "${MY_SOURCES}" "include/glad/glad.h" "src/core/glad.c") #if lib is not with cmake
 
 target_include_directories(DazaiRenderer PUBLIC "${CMAKE_CURRENT_SOURCE_DIR}/include/")
 
