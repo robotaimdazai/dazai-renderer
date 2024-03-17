@@ -3,12 +3,20 @@
 #include <iostream>
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
+#include "glm/glm.hpp"
+#include "glm/gtc/matrix_transform.hpp"
+#include "glm/gtc/type_ptr.hpp"
 #include "core/Shader.hpp"
 #include "core/Vao.hpp"
 #include "core/Vbo.hpp"
 #include "core/Ebo.hpp"
-#include "stb/stb_image.h";
+#include "stb/stb_image.h"
 #include "core/Texture2d.hpp"
+#include "util/Util.hpp"
+
+
+const unsigned int width = 800;
+const unsigned int height = 600;
 
 
 int main()
@@ -29,25 +37,33 @@ int main()
 	glfwMakeContextCurrent(window);
 	gladLoadGL();
 
-	glViewport(0,0,800,600); 
+	glEnable(GL_DEPTH_TEST);
+	glViewport(0,0,width,height); 
 
 	//draw here
 
 	DazaiEngine::Shader shader("shaders/default.vert", "shaders/default.frag");
 
 
+	// Vertices coordinates
 	GLfloat vertices[] =
 	{ //     COORDINATES     /        COLORS      /   TexCoord  //
-		-0.5f, -0.5f, 0.0f,     1.0f, 0.0f, 0.0f,	0.0f, 0.0f, // Lower left corner
-		-0.5f,  0.5f, 0.0f,     0.0f, 1.0f, 0.0f,	0.0f, 1.0f, // Upper left corner
-		 0.5f,  0.5f, 0.0f,     0.0f, 0.0f, 1.0f,	1.0f, 1.0f, // Upper right corner
-		 0.5f, -0.5f, 0.0f,     1.0f, 1.0f, 1.0f,	1.0f, 0.0f  // Lower right corner
+		-0.5f, 0.0f,  0.5f,     0.83f, 0.70f, 0.44f,	0.0f, 0.0f,
+		-0.5f, 0.0f, -0.5f,     0.83f, 0.70f, 0.44f,	5.0f, 0.0f,
+		 0.5f, 0.0f, -0.5f,     0.83f, 0.70f, 0.44f,	0.0f, 0.0f,
+		 0.5f, 0.0f,  0.5f,     0.83f, 0.70f, 0.44f,	5.0f, 0.0f,
+		 0.0f, 0.8f,  0.0f,     0.92f, 0.86f, 0.76f,	2.5f, 5.0f
 	};
 
+	// Indices for vertices order
 	GLuint indices[] =
 	{
-		0, 2, 1, // Upper triangle
-		0, 3, 2 // Lower triangle
+		0, 1, 2,
+		0, 2, 3,
+		0, 1, 4,
+		1, 2, 4,
+		2, 3, 4,
+		3, 0, 4
 	};
 
 	DazaiEngine::Vao vao;
@@ -64,19 +80,43 @@ int main()
 	vbo.unBind();
 	ebo.unBind();
 
-	DazaiEngine::Texture2d tex("textures/dazai.png",GL_TEXTURE_2D,GL_TEXTURE0,GL_RGBA,GL_UNSIGNED_BYTE);
+	DazaiEngine::Texture2d tex("textures/dazai.jpg",
+		GL_TEXTURE_2D,GL_TEXTURE0,
+		DazaiEngine::Util::getGlTextureFormatFromExtension(DazaiEngine::FileSystem::getFileExtension("textures/dazai.jpg"))
+		,GL_UNSIGNED_BYTE);
+
 	tex.bindToShader(shader,"tex0",0);
-
-
+	float rot = 0.0f;
+	double prevTime = glfwGetTime();
 	while (!glfwWindowShouldClose(window)) {
 
 		glClearColor(0.07f, 0.13f, 0.17f, 1.0f);
-		glClear(GL_COLOR_BUFFER_BIT);
+		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 		shader.bind();
+
+		double curTime = glfwGetTime();
+		if (curTime - prevTime >= 1/60)
+		{
+			rot += 0.2f;
+			prevTime = curTime;
+		}
+
+		glm::mat4 model = glm::mat4(1.0f);
+		glm::mat4 view = glm::mat4(1.0f);
+		glm::mat4 proj = glm::mat4(1.0f);
+
+		
+
+		model = glm::rotate(model,glm::radians(rot),glm::vec3(0,1.0f,0));
+		view = glm::translate(view, glm::vec3(0.0f, 0.0f, -2.0f));
+		proj = glm::perspective(glm::radians(70.0f), (float)(width/height), 0.1f, 100.0f);
+		shader.setMat4("model",model);
+		shader.setMat4("view",model);
+		shader.setMat4("proj",model);
 		vao.bind();
 		tex.bind();
 		//glDrawArrays(GL_TRIANGLES,0,3);
-		glDrawElements(GL_TRIANGLES,9,GL_UNSIGNED_INT,0);
+		glDrawElements(GL_TRIANGLES,sizeof(indices)/sizeof(int), GL_UNSIGNED_INT, 0);
 
 		glfwSwapBuffers(window);
 		glfwPollEvents();

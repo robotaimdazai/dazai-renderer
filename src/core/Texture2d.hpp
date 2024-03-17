@@ -20,6 +20,7 @@ namespace DazaiEngine
 		auto numChannels() ->  int;
 		auto type() -> GLenum;
 		auto slot() -> unsigned int;
+
 	private:
 		unsigned int mId;
 		int mWidth;

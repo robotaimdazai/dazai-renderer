@@ -3,6 +3,9 @@
 #
 cmake_minimum_required (VERSION 3.8)
 find_package(OpenGL REQUIRED)
+
+
+
 set(DEVELOPMENT_BUILD true) # set accordingly
 
 # Enable Hot Reload for MSVC compilers if supported.
@@ -13,6 +16,7 @@ endif()
 
 
 add_subdirectory("vendor/glfw-3.4")
+add_subdirectory("vendor/glm")
 project ("DazaiRenderer")
 set(CMAKE_CXX_STANDARD 20)
 
@@ -36,7 +40,7 @@ add_executable (DazaiRenderer "${MY_SOURCES}" "include/glad/glad.h" "src/core/gl
 
 target_include_directories(DazaiRenderer PUBLIC "${CMAKE_CURRENT_SOURCE_DIR}/include/")
 
-target_link_libraries(DazaiRenderer PRIVATE glfw )  # keep adding libs here
+target_link_libraries(DazaiRenderer PRIVATE glfw glm)  # keep adding libs here
 
 if (CMAKE_VERSION VERSION_GREATER 3.12)
   set_property(TARGET DazaiRenderer PROPERTY CXX_STANDARD 20)

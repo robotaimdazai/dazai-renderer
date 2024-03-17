@@ -4,6 +4,9 @@
 #include <glad/glad.h>
 #include "../util/FileSystem.hpp";
 #include <iostream>
+#include <glm/glm.hpp>
+#include <glm/gtc/matrix_transform.hpp>
+#include <glm/gtc/type_ptr.hpp>
 
 
 namespace DazaiEngine 
@@ -21,6 +24,7 @@ namespace DazaiEngine
 		auto id() -> unsigned int;
 		auto setFloat(const char* name, GLfloat value) -> void;
 		auto setInt(const char* name, GLint value) -> void;
+		auto setMat4(const char* name, glm::mat4& value) -> void;
 
 	private:
 		unsigned int mId = 0;
