@@ -24,7 +24,7 @@ namespace DazaiEngine
 		auto id() -> unsigned int;
 		auto setFloat(const char* name, GLfloat value) -> void;
 		auto setInt(const char* name, GLint value) -> void;
-		auto setMat4(const char* name, glm::mat4& value) -> void;
+		auto setMat4(const char* name, glm::mat4 value) -> void;
 
 	private:
 		unsigned int mId = 0;

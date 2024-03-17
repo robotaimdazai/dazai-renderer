@@ -65,7 +65,7 @@ namespace DazaiEngine
 		GLuint uniformId = glGetUniformLocation(mId, name);
 		glUniform1i(uniformId, value);
 	}
-	auto Shader::setMat4(const char* name, glm::mat4& value) -> void
+	auto Shader::setMat4(const char* name, glm::mat4 value) -> void
 	{
 		GLuint uniformId = glGetUniformLocation(mId, name);
 		glUniformMatrix4fv(uniformId,1,GL_FALSE,glm::value_ptr(value));

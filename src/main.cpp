@@ -13,6 +13,7 @@
 #include "stb/stb_image.h"
 #include "core/Texture2d.hpp"
 #include "util/Util.hpp"
+#include "core/Camera.hpp"
 
 
 const unsigned int width = 800;
@@ -86,33 +87,24 @@ int main()
 		,GL_UNSIGNED_BYTE);
 
 	tex.bindToShader(shader,"tex0",0);
-	float rot = 0.0f;
+
 	double prevTime = glfwGetTime();
+
+	//camera
+	DazaiEngine::Camera camera(width, height, glm::vec3(0.0f, 0.0f, 1.0f));
+
 	while (!glfwWindowShouldClose(window)) {
 
 		glClearColor(0.07f, 0.13f, 0.17f, 1.0f);
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 		shader.bind();
-
+		camera.setViewProjectionMatrix(90.0f,0.1f,100.0f,shader,"camMatrix");
 		double curTime = glfwGetTime();
 		if (curTime - prevTime >= 1/60)
 		{
-			rot += 0.2f;
 			prevTime = curTime;
 		}
 
-		glm::mat4 model = glm::mat4(1.0f);
-		glm::mat4 view = glm::mat4(1.0f);
-		glm::mat4 proj = glm::mat4(1.0f);
-
-		
-
-		model = glm::rotate(model,glm::radians(rot),glm::vec3(0,1.0f,0));
-		view = glm::translate(view, glm::vec3(0.0f, 0.0f, -2.0f));
-		proj = glm::perspective(glm::radians(70.0f), (float)(width/height), 0.1f, 100.0f);
-		shader.setMat4("model",model);
-		shader.setMat4("view",model);
-		shader.setMat4("proj",model);
 		vao.bind();
 		tex.bind();
 		//glDrawArrays(GL_TRIANGLES,0,3);
