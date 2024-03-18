@@ -7,12 +7,12 @@ namespace DazaiEngine
 	{
 	public:
 		Ebo(GLuint* indices, GLsizeiptr size);
-		auto id() -> unsigned int;
 		auto bind() -> void;
 		auto unBind() -> void;
 		auto destroy() -> void;
+		unsigned int id = 0;
 
 	private:
-		unsigned int mId = 0;
+		
 	};
 }

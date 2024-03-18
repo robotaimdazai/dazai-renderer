@@ -4,17 +4,13 @@ namespace DazaiEngine
 {
 	Vbo::Vbo(GLfloat* vertices, GLsizeiptr size)
 	{
-		glGenBuffers(1, &mId);
-		glBindBuffer(GL_ARRAY_BUFFER,mId);
+		glGenBuffers(1, &id);
+		glBindBuffer(GL_ARRAY_BUFFER,id);
 		glBufferData(GL_ARRAY_BUFFER,size,vertices,GL_STATIC_DRAW);
-	}
-	auto Vbo::id() -> unsigned int
-	{
-		return mId;
 	}
 	auto Vbo::bind() -> void
 	{
-		glBindBuffer(GL_ARRAY_BUFFER, mId);
+		glBindBuffer(GL_ARRAY_BUFFER, id);
 	}
 	auto Vbo::unBind() -> void
 	{
@@ -22,6 +18,6 @@ namespace DazaiEngine
 	}
 	auto Vbo::destroy() -> void
 	{
-		glDeleteBuffers(1, &mId);
+		glDeleteBuffers(1, &id);
 	}
 }

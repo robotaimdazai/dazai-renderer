@@ -5,26 +5,19 @@ namespace DazaiEngine
 {
 	Vao::Vao()
 	{
-		glGenVertexArrays(1,&mId);
+		glGenVertexArrays(1,&id);
 		
 	}
-	
 	auto Vao::linkAttrib(Vbo& vbo, GLuint layout, GLuint numComponents, GLenum type, GLsizeiptr stride, void* offset) -> void
 	{
-
 		vbo.bind();
 		glVertexAttribPointer(layout, numComponents, type, GL_FALSE, stride, offset);
 		glEnableVertexAttribArray(layout);
 		vbo.unBind();
-
-	}
-	auto Vao::id() -> unsigned int
-	{
-		return mId;
 	}
 	auto Vao::bind() -> void
 	{
-		glBindVertexArray(mId);
+		glBindVertexArray(id);
 	}
 	auto Vao::unBind() -> void
 	{
@@ -32,6 +25,6 @@ namespace DazaiEngine
 	}
 	auto Vao::destroy() -> void
 	{
-		glDeleteVertexArrays(1, &mId);
+		glDeleteVertexArrays(1, &id);
 	}
 }

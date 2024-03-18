@@ -14,6 +14,7 @@
 #include "core/Texture2d.hpp"
 #include "util/Util.hpp"
 #include "core/Camera.hpp"
+#include "core/Time.hpp"
 
 
 const unsigned int width = 800;
@@ -88,30 +89,25 @@ int main()
 
 	tex.bindToShader(shader,"tex0",0);
 
-	double prevTime = glfwGetTime();
-
 	//camera
 	DazaiEngine::Camera camera(width, height, glm::vec3(0.0f, 0.0f, 1.0f));
 
 	while (!glfwWindowShouldClose(window)) {
-
+		//timer
+		DazaiEngine::Time::updateDeltaTime();
+		//render
 		glClearColor(0.07f, 0.13f, 0.17f, 1.0f);
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 		shader.bind();
+		camera.input(window);
 		camera.setViewProjectionMatrix(90.0f,0.1f,100.0f,shader,"camMatrix");
-		double curTime = glfwGetTime();
-		if (curTime - prevTime >= 1/60)
-		{
-			prevTime = curTime;
-		}
-
 		vao.bind();
 		tex.bind();
-		//glDrawArrays(GL_TRIANGLES,0,3);
 		glDrawElements(GL_TRIANGLES,sizeof(indices)/sizeof(int), GL_UNSIGNED_INT, 0);
-
 		glfwSwapBuffers(window);
 		glfwPollEvents();
+		//FPS cap
+		DazaiEngine::Time::delayTime();
 	}
 	vao.destroy();
 	vbo.destroy();

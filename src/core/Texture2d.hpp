@@ -14,19 +14,12 @@ namespace DazaiEngine
 		auto bind() -> void;
 		auto unbind() -> void;
 		auto destroy() -> void;
-		auto id() -> unsigned int;
-		auto width() ->  int;
-		auto height() ->  int;
-		auto numChannels() ->  int;
-		auto type() -> GLenum;
-		auto slot() -> unsigned int;
-
-	private:
-		unsigned int mId;
-		int mWidth;
-		int mHeight;
+		unsigned int id;
+		int width;
+		int height;
 		int mNumChannels;
-		unsigned int mSlot;
-		GLenum mType;
+		unsigned int slot;
+		GLenum texType;
+		
 	};
 }

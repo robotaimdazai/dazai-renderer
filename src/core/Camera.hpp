@@ -7,6 +7,7 @@
 #include<glm/gtx/rotate_vector.hpp>
 #include<glm/gtx/vector_angle.hpp>
 #include "Shader.hpp"
+#include "Time.hpp"
 
 namespace DazaiEngine
 {
@@ -18,12 +19,16 @@ namespace DazaiEngine
 		auto setViewProjectionMatrix(float fov, float near, float far,Shader& shader, const char* uniform) -> void;
 		auto input(GLFWwindow* window) -> void;
 
-		glm::vec3 mPosition;
-		glm::vec3 mForward{ 0.0f,0.0f,-1.0f};
-		glm::vec3 mUp{0.0f,1.0f,0.0f};
-		int mWidth;
-		int mHeight;
-		float mSpeed{ 0.1f };
-		float mSensitivity{ 100.0f };
+		glm::vec3 position;
+		glm::vec3 forward{ 0.0f,0.0f,-1.0f};
+		glm::vec3 up{0.0f,1.0f,0.0f};
+		int width;
+		int height;
+		float speed{ 0.7f };
+		float sensitivity{ 10000.0f };
+
+	private:
+		bool mFirstClick{true};
+
 	};
 }

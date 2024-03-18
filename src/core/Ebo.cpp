@@ -4,17 +4,13 @@ namespace DazaiEngine
 {
 	Ebo::Ebo(GLuint* indices, GLsizeiptr size)
 	{
-		glGenBuffers(1, &mId);
-		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, mId);
+		glGenBuffers(1, &id);
+		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, id);
 		glBufferData(GL_ELEMENT_ARRAY_BUFFER,size,indices,GL_STATIC_DRAW);
-	}
-	auto Ebo::id() -> unsigned int
-	{
-		return mId;
 	}
 	auto Ebo::bind() -> void
 	{
-		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, mId);
+		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, id);
 	}
 	auto Ebo::unBind() -> void
 	{
@@ -22,6 +18,6 @@ namespace DazaiEngine
 	}
 	auto Ebo::destroy() -> void
 	{
-		glDeleteBuffers(1, &mId);
+		glDeleteBuffers(1, &id);
 	}
 }
