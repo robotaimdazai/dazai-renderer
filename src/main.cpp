@@ -112,6 +112,10 @@ int main()
 		4, 6, 7
 	};
 
+
+	//camera
+	DazaiEngine::Camera camera(width, height, glm::vec3(0.0f, 0.0f, 1.0f));
+
 	DazaiEngine::Vao vao1;
 	vao1.bind();
 	DazaiEngine::Vbo vbo1(lightVertices, sizeof(lightVertices));
@@ -147,6 +151,7 @@ int main()
 	shader.setMat4("model", pyramidModel);
 	shader.setVec4("lightColor", lightColor);
 	shader.setVec3("lightPos", lightPos);
+	shader.setVec3("camPos", camera.position);
 
 
 
@@ -157,8 +162,7 @@ int main()
 
 	tex.bindToShader(shader,"tex0",0);
 
-	//camera
-	DazaiEngine::Camera camera(width, height, glm::vec3(0.0f, 0.0f, 1.0f));
+	
 
 	while (!glfwWindowShouldClose(window)) {
 		//timer
