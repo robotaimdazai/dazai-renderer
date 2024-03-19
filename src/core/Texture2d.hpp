@@ -12,7 +12,7 @@ namespace DazaiEngine
 		Texture2d(const std::string& path, GLenum texType, GLenum slot, GLenum format, GLenum pixelType);
 		auto bindToShader(Shader& shader, const char* uniform, GLuint slot) -> void;
 		auto bind() -> void;
-		auto unbind() -> void;
+		auto unBind() -> void;
 		auto destroy() -> void;
 		unsigned int id;
 		int width;

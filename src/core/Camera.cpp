@@ -1,4 +1,5 @@
 #include "Camera.hpp"
+#include "Camera.hpp"
 
 namespace DazaiEngine
 {
@@ -6,13 +7,17 @@ namespace DazaiEngine
 	{
 
 	}
-	auto Camera::setViewProjectionMatrix(float fov, float near, float far, Shader& shader, const char* uniform) -> void
+	auto Camera::updateMatrix(float fov, float near, float far) -> void
 	{
 		glm::mat4 view = glm::mat4(1.0f);
 		glm::mat4 proj = glm::mat4(1.0f);
 		view = glm::lookAt(position, position + forward, up);
 		proj = glm::perspective(glm::radians(fov), (float)width / height, near, far);
-		shader.setMat4(uniform, proj*view );
+		mMatrix = proj * view;
+	}
+	auto Camera::setMatrix(Shader& shader, const char* uniform) -> void
+	{
+		shader.setMat4(uniform, mMatrix);
 	}
 	auto Camera::input(GLFWwindow* window) -> void
 	{

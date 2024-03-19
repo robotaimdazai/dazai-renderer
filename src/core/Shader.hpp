@@ -19,11 +19,13 @@ namespace DazaiEngine
 		Shader(const std::string& vertPath, const std::string& fragPath);
 		~Shader();
 		auto bind() -> void;
-		auto unbind()->void;
+		auto unBind()->void;
 		auto destroy()->void;
 		auto setFloat(const char* name, GLfloat value) -> void;
 		auto setInt(const char* name, GLint value) -> void;
 		auto setMat4(const char* name, glm::mat4 value) -> void;
+		auto setVec4(const char* name, glm::vec4 value) -> void;
+		auto setVec3(const char* name, glm::vec3 value) -> void;
 		unsigned int id = 0;
 	};
 }

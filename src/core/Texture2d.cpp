@@ -34,7 +34,7 @@ namespace DazaiEngine
 	{
 		glBindTexture(texType, id);
 	}
-	auto Texture2d::unbind() -> void
+	auto Texture2d::unBind() -> void
 	{
 		glBindTexture(texType, 0);
 	}

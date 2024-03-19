@@ -16,7 +16,8 @@ namespace DazaiEngine
 	public:
 		Camera() = default;
 		Camera(int width, int height, glm::vec3 position);
-		auto setViewProjectionMatrix(float fov, float near, float far,Shader& shader, const char* uniform) -> void;
+		auto updateMatrix(float fov, float near, float far) -> void;
+		auto setMatrix(Shader& shader, const char* uniform) -> void;
 		auto input(GLFWwindow* window) -> void;
 
 		glm::vec3 position;
@@ -29,6 +30,7 @@ namespace DazaiEngine
 
 	private:
 		bool mFirstClick{true};
+		glm::mat4 mMatrix;
 
 	};
 }
