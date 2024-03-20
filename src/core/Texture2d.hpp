@@ -9,8 +9,8 @@ namespace DazaiEngine
 	{
 	public:
 		Texture2d() = default;
-		Texture2d(const std::string& path, GLenum texType, GLenum slot, GLenum format, GLenum pixelType);
-		auto bindToShader(Shader& shader, const char* uniform, GLuint slot) -> void;
+		Texture2d(const std::string& path, GLenum texType, unsigned int slot, GLenum format, GLenum pixelType);
+		auto bindToShader(Shader& shader, const char* uniform, unsigned int slot) -> void;
 		auto bind() -> void;
 		auto unBind() -> void;
 		auto destroy() -> void;
