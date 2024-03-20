@@ -6,9 +6,7 @@ namespace DazaiEngine
 		texType(texType),slot(slot),id(-1)
 	{
 		//generations
-		stbi_set_flip_vertically_on_load(true);
-		std::string resolvedPath = RESOURCES + path;
-		unsigned char* bytes = stbi_load(resolvedPath.c_str(), &width, &height, &mNumChannels, 0);
+		unsigned char* bytes = Resources::loadRawTexture(path, &width, &height, &mNumChannels, 0);
 		glGenTextures(1,&id);
 		glActiveTexture(GL_TEXTURE0 + slot);
 		glBindTexture(texType,id);

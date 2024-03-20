@@ -7,8 +7,8 @@ namespace DazaiEngine
 	{
 		auto vertId = glCreateShader(GL_VERTEX_SHADER);
 		auto fragId = glCreateShader(GL_FRAGMENT_SHADER);
-		const std::string  vertSrc = FileSystem::loadFile(vertPath);
-		const std::string  fragSrc = FileSystem::loadFile(fragPath);
+		const std::string  vertSrc = Resources::readTextFile(vertPath);
+		const std::string  fragSrc = Resources::readTextFile(fragPath);
 		const char* vertSrcPtr = vertSrc.c_str();
 		const char* fragSrcPtr = fragSrc.c_str();
 		if (vertSrcPtr == "" || fragSrcPtr == "")

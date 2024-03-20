@@ -6,10 +6,10 @@
 
 namespace DazaiEngine 
 {
-	static class FileSystem 
+	static class Resources 
 	{
 		public:
-            auto static loadFile(const std::string& path) -> std::string
+            auto static readTextFile(const std::string& path) -> std::string
             {
                 try
                 {
@@ -19,7 +19,7 @@ namespace DazaiEngine
             
                     if (!stream.is_open())
                     {
-                        std::cout << "FileSystem:: Can't open file" << std::endl;
+                        std::cout << "Resources:: Can't open file" << std::endl;
                     }
 
                     std::stringstream buffer;
@@ -31,6 +31,14 @@ namespace DazaiEngine
                     std::cout << "Exception occurred: " << ex.what() << std::endl;
                     return "";
                 }
+            }
+
+            auto static loadRawTexture(const std::string& path, int* width, int* height,
+                int* numChannels, int desiredChannels)->unsigned char*
+            {
+                std::string resolvedPath = RESOURCES + path;
+                stbi_set_flip_vertically_on_load(true);
+                return stbi_load(resolvedPath.c_str(), width, height, numChannels, 0);
             }
 
             auto static getFileExtension(const std::string& path)->std::string
