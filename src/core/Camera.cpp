@@ -15,7 +15,7 @@ namespace DazaiEngine
 		proj = glm::perspective(glm::radians(fov), (float)width / height, near, far);
 		mMatrix = proj * view;
 	}
-	auto Camera::setMatrix(Shader& shader, const char* uniform) -> void
+	auto Camera::bindtoShader(Shader& shader, const char* uniform) -> void
 	{
 		shader.setMat4(uniform, mMatrix);
 	}

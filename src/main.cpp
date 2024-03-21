@@ -15,6 +15,7 @@
 #include "util/Util.hpp"
 #include "core/Camera.hpp"
 #include "core/Time.hpp"
+#include "core/Mesh.hpp"
 
 
 const unsigned int width = 800;
@@ -47,14 +48,16 @@ int main()
 	DazaiEngine::Shader shader("shaders/default.vert", "shaders/default.frag");
 	DazaiEngine::Shader lightShader("shaders/light.vert", "shaders/light.frag");
 
+	
 	// Vertices coordinates
-	GLfloat vertices[] =
-	{ //     COORDINATES     /        COLORS        /    TexCoord    /       NORMALS     //
-		-1.0f, 0.0f,  1.0f,		0.0f, 0.0f, 0.0f,		0.0f, 0.0f,		0.0f, 1.0f, 0.0f,
-		-1.0f, 0.0f, -1.0f,		0.0f, 0.0f, 0.0f,		0.0f, 1.0f,		0.0f, 1.0f, 0.0f,
-		 1.0f, 0.0f, -1.0f,		0.0f, 0.0f, 0.0f,		1.0f, 1.0f,		0.0f, 1.0f, 0.0f,
-		 1.0f, 0.0f,  1.0f,		0.0f, 0.0f, 0.0f,		1.0f, 0.0f,		0.0f, 1.0f, 0.0f
+	DazaiEngine::Vertex vertices[] =
+	{ //               COORDINATES           /            COLORS          /           NORMALS         /       TEXTURE COORDINATES    //
+		DazaiEngine::Vertex{glm::vec3(-1.0f, 0.0f,  1.0f), glm::vec3(0.0f, 1.0f, 0.0f), glm::vec3(1.0f, 1.0f, 1.0f), glm::vec2(0.0f, 0.0f)},
+		DazaiEngine::Vertex{glm::vec3(-1.0f, 0.0f, -1.0f), glm::vec3(0.0f, 1.0f, 0.0f), glm::vec3(1.0f, 1.0f, 1.0f), glm::vec2(0.0f, 1.0f)},
+		DazaiEngine::Vertex{glm::vec3(1.0f, 0.0f, -1.0f), glm::vec3(0.0f, 1.0f, 0.0f), glm::vec3(1.0f, 1.0f, 1.0f), glm::vec2(1.0f, 1.0f)},
+		DazaiEngine::Vertex{glm::vec3(1.0f, 0.0f,  1.0f), glm::vec3(0.0f, 1.0f, 0.0f), glm::vec3(1.0f, 1.0f, 1.0f), glm::vec2(1.0f, 0.0f)}
 	};
+
 
 	// Indices for vertices order
 	GLuint indices[] =
@@ -63,16 +66,16 @@ int main()
 		0, 2, 3
 	};
 
-	GLfloat lightVertices[] =
+	DazaiEngine::Vertex lightVertices[] =
 	{ //     COORDINATES     //
-		-0.1f, -0.1f,  0.1f,
-		-0.1f, -0.1f, -0.1f,
-		 0.1f, -0.1f, -0.1f,
-		 0.1f, -0.1f,  0.1f,
-		-0.1f,  0.1f,  0.1f,
-		-0.1f,  0.1f, -0.1f,
-		 0.1f,  0.1f, -0.1f,
-		 0.1f,  0.1f,  0.1f
+		DazaiEngine::Vertex{glm::vec3(-0.1f, -0.1f,  0.1f)},
+		DazaiEngine::Vertex{glm::vec3(-0.1f, -0.1f, -0.1f)},
+		DazaiEngine::Vertex{glm::vec3(0.1f, -0.1f, -0.1f)},
+		DazaiEngine::Vertex{glm::vec3(0.1f, -0.1f,  0.1f)},
+		DazaiEngine::Vertex{glm::vec3(-0.1f,  0.1f,  0.1f)},
+		DazaiEngine::Vertex{glm::vec3(-0.1f,  0.1f, -0.1f)},
+		DazaiEngine::Vertex{glm::vec3(0.1f,  0.1f, -0.1f)},
+		DazaiEngine::Vertex{glm::vec3(0.1f,  0.1f,  0.1f)}
 	};
 
 	GLuint lightIndices[] =
@@ -95,14 +98,7 @@ int main()
 	//camera
 	DazaiEngine::Camera camera(width, height, glm::vec3(0.0f, 0.0f, 2.0f));
 
-	DazaiEngine::Vao vao1;
-	vao1.bind();
-	DazaiEngine::Vbo vbo1(lightVertices, sizeof(lightVertices));
-	DazaiEngine::Ebo ebo1(lightIndices, sizeof(lightIndices));
-	vao1.linkAttrib(vbo1, 0, 3, GL_FLOAT, 3 * sizeof(float), (void*)0);
-	vao1.unBind();
-	vbo1.unBind();
-	ebo1.unBind();
+	
 	glm::mat4 lightModel = glm::mat4(1.0f);
 	glm::vec3 lightPos = glm::vec3(0.5f, 0.5f, 0.5f);
 	glm::vec4 lightColor = { 1.0f,1.0f,1.0f,1.0f };
@@ -111,18 +107,7 @@ int main()
 	lightShader.setMat4("model", lightModel);
 	lightShader.setVec4("lightColor", lightColor);
 
-	DazaiEngine::Vao vao;
-	vao.bind();
-	DazaiEngine::Vbo vbo(vertices, sizeof(vertices));
-	DazaiEngine::Ebo ebo(indices,sizeof(indices));
-	vao.linkAttrib(vbo,0,3,GL_FLOAT,11*sizeof(float),(void*)0);
-	vao.linkAttrib(vbo,1,3,GL_FLOAT,11*sizeof(float),(void*)(3*sizeof(float)));
-	vao.linkAttrib(vbo,2,2,GL_FLOAT,11*sizeof(float),(void*)(6*sizeof(float)));
-	vao.linkAttrib(vbo,3,3,GL_FLOAT,11*sizeof(float),(void*)(8*sizeof(float)));
-
-	vao.unBind();
-	vbo.unBind();
-	ebo.unBind();
+	
 	glm::mat4 objectModel = glm::mat4(1.0f);
 	glm::vec3 objectPos = glm::vec3(0.5f, 0.0f, 0.5f);
 	objectModel = glm::translate(objectModel,objectPos);
@@ -130,45 +115,45 @@ int main()
 	shader.setMat4("model", objectModel);
 	shader.setVec4("lightColor", lightColor);
 	shader.setVec3("lightPos", lightPos);
-	shader.setVec3("camPos", camera.position);
+	
 
+	DazaiEngine::Texture2d textures[]
+	{
+		DazaiEngine::Texture2d ("textures/planks.png","diffuse0", 0, GL_RGBA, GL_UNSIGNED_BYTE),
+	    DazaiEngine::Texture2d ("textures/planksSpec.png","specular0", 1, GL_RED, GL_UNSIGNED_BYTE)
+	};
 
+	std::vector<DazaiEngine::Vertex> vert(vertices, vertices + sizeof(vertices) / sizeof(DazaiEngine::Vertex));
+	std::vector<GLuint> ind(indices, indices + sizeof(indices) / sizeof(GLuint));
+	std::vector<DazaiEngine::Texture2d> tex(textures, textures + sizeof(textures) / sizeof(DazaiEngine::Texture2d));
+	DazaiEngine::Mesh floor(vert, ind, tex);
 
-	DazaiEngine::Texture2d tex("textures/planks.png",GL_TEXTURE_2D,0,GL_RGBA,GL_UNSIGNED_BYTE);
-	DazaiEngine::Texture2d specMap("textures/planksSpec.png",GL_TEXTURE_2D,1,GL_RED,GL_UNSIGNED_BYTE);
-
-	tex.bindToShader(shader,"tex0",0);
-	specMap.bindToShader(shader,"tex1",1);
+	std::vector<DazaiEngine::Vertex> lightVerts(lightVertices, lightVertices + sizeof(lightVertices) / sizeof(DazaiEngine::Vertex));
+	std::vector<GLuint> lightInd(lightIndices, lightIndices + sizeof(lightIndices) / sizeof(GLuint));
+	DazaiEngine::Mesh light(lightVerts, lightInd, tex);
 
 	
 
 	while (!glfwWindowShouldClose(window)) {
 		//timer
 		DazaiEngine::Time::updateDeltaTime();
-		//render
+		//camera
 		glClearColor(0.07f, 0.13f, 0.17f, 1.0f);
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 		shader.bind();
 		camera.input(window);
 		camera.updateMatrix(45.0f,0.1f,100.0f);
-		camera.setMatrix(shader, "camMatrix");
-		vao.bind();
-		tex.bind();
-		specMap.bind();
-		glDrawElements(GL_TRIANGLES,sizeof(indices)/sizeof(int), GL_UNSIGNED_INT, 0);
-		//for light
-		lightShader.bind();
-		camera.setMatrix(lightShader,"camMatrix");
-		vao1.bind();
-		glDrawElements(GL_TRIANGLES, sizeof(lightIndices) / sizeof(int), GL_UNSIGNED_INT, 0);
+		//render
+		floor.draw(shader, camera);
+		light.draw(lightShader,camera);
+		
+		//--
 		glfwSwapBuffers(window);
 		glfwPollEvents();
 		//FPS cap
 		DazaiEngine::Time::delayTime();
 	}
-	vao.destroy();
-	vbo.destroy();
-	ebo.destroy();
+	
 	shader.destroy();
 
 	glfwDestroyWindow(window);

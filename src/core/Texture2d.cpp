@@ -2,24 +2,24 @@
 
 namespace DazaiEngine
 {
-	Texture2d::Texture2d(const std::string& path, GLenum texType, unsigned int slot, GLenum format, GLenum pixelType):
+	Texture2d::Texture2d(const std::string& path, const char* texType, unsigned int slot, GLenum format, GLenum pixelType):
 		texType(texType),slot(slot),id(-1)
 	{
 		//generations
 		unsigned char* bytes = Resources::loadRawTexture(path, &width, &height, &mNumChannels, 0);
 		glGenTextures(1,&id);
 		glActiveTexture(GL_TEXTURE0 + slot);
-		glBindTexture(texType,id);
+		glBindTexture(GL_TEXTURE_2D,id);
 		//parameters
-		glTexParameteri(texType,GL_TEXTURE_MIN_FILTER,GL_NEAREST_MIPMAP_LINEAR);
-		glTexParameteri(texType,GL_TEXTURE_MAG_FILTER,GL_NEAREST);
-		glTexParameteri(texType,GL_TEXTURE_WRAP_S,GL_REPEAT);
-		glTexParameteri(texType,GL_TEXTURE_WRAP_T,GL_REPEAT);
-		glTexImage2D(texType,0,GL_RGBA,width,height,0,format,pixelType,bytes);
+		glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MIN_FILTER,GL_NEAREST_MIPMAP_LINEAR);
+		glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MAG_FILTER,GL_NEAREST);
+		glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_WRAP_S,GL_REPEAT);
+		glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_WRAP_T,GL_REPEAT);
+		glTexImage2D(GL_TEXTURE_2D,0,GL_RGBA,width,height,0,format,pixelType,bytes);
 		//mipmaps
-		glGenerateMipmap(texType);
+		glGenerateMipmap(GL_TEXTURE_2D);
 		stbi_image_free(bytes);
-		glBindTexture(texType,0);
+		glBindTexture(GL_TEXTURE_2D,0);
 
 	}
 	auto Texture2d::bindToShader(Shader& shader, const char* uniform, unsigned int slot) -> void
@@ -30,11 +30,11 @@ namespace DazaiEngine
 	auto Texture2d::bind() -> void
 	{
 		glActiveTexture(GL_TEXTURE0 + slot);
-		glBindTexture(texType, id);
+		glBindTexture(GL_TEXTURE_2D, id);
 	}
 	auto Texture2d::unBind() -> void
 	{
-		glBindTexture(texType, 0);
+		glBindTexture(GL_TEXTURE_2D, 0);
 	}
 	auto Texture2d::destroy() -> void
 	{

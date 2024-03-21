@@ -9,7 +9,7 @@ namespace DazaiEngine
 	{
 	public:
 		Texture2d() = default;
-		Texture2d(const std::string& path, GLenum texType, unsigned int slot, GLenum format, GLenum pixelType);
+		Texture2d(const std::string& path, const char* texType, unsigned int slot, GLenum format, GLenum pixelType);
 		auto bindToShader(Shader& shader, const char* uniform, unsigned int slot) -> void;
 		auto bind() -> void;
 		auto unBind() -> void;
@@ -19,7 +19,6 @@ namespace DazaiEngine
 		int height;
 		int mNumChannels;
 		unsigned int slot;
-		GLenum texType;
-		
+		const char* texType;
 	};
 }

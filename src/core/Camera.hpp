@@ -17,7 +17,7 @@ namespace DazaiEngine
 		Camera() = default;
 		Camera(int width, int height, glm::vec3 position);
 		auto updateMatrix(float fov, float near, float far) -> void;
-		auto setMatrix(Shader& shader, const char* uniform) -> void;
+		auto bindtoShader(Shader& shader, const char* uniform) -> void;
 		auto input(GLFWwindow* window) -> void;
 
 		glm::vec3 position;
