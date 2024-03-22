@@ -5,6 +5,7 @@
 #include "Ebo.hpp"
 #include "Camera.hpp"
 #include "Texture2d.hpp"
+#include "Material.hpp"
 
 namespace DazaiEngine 
 {
@@ -13,9 +14,9 @@ namespace DazaiEngine
 	public:
 		std::vector<Vertex> vertices;
 		std::vector<GLuint> indices;
-		std::vector<Texture2d> textures;
 		Vao vao;
-		Mesh(std::vector<Vertex>& vertices, std::vector<GLuint>& indices, std::vector<Texture2d>& textures);
-		auto draw(Shader& shader, Camera& camera)->void;
+		Mesh(std::vector<Vertex>& vertices, std::vector<GLuint>& indices, Material& material);
+		auto draw(Camera& camera)->void;
+		Material material;
 	};
 }

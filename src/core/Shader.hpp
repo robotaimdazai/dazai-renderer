@@ -19,7 +19,7 @@ namespace DazaiEngine
 		Shader(const std::string& vertPath, const std::string& fragPath);
 		~Shader();
 		auto bind() -> void;
-		auto unBind()->void;
+		auto unbind()->void;
 		auto destroy()->void;
 		auto setFloat(const char* name, GLfloat value) -> void;
 		auto setInt(const char* name, GLint value) -> void;

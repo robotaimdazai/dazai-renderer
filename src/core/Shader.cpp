@@ -79,7 +79,7 @@ namespace DazaiEngine
 	{
 		glUseProgram(id);
 	}
-	auto Shader::unBind() -> void
+	auto Shader::unbind() -> void
 	{
 		glUseProgram(0);
 	}

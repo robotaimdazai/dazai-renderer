@@ -16,6 +16,7 @@
 #include "core/Camera.hpp"
 #include "core/Time.hpp"
 #include "core/Mesh.hpp"
+#include "core/Material.hpp"
 
 
 const unsigned int width = 800;
@@ -43,12 +44,6 @@ int main()
 	glEnable(GL_DEPTH_TEST);
 	glViewport(0,0,width,height); 
 
-	//draw here
-
-	DazaiEngine::Shader shader("shaders/default.vert", "shaders/default.frag");
-	DazaiEngine::Shader lightShader("shaders/light.vert", "shaders/light.frag");
-
-	
 	// Vertices coordinates
 	DazaiEngine::Vertex vertices[] =
 	{ //               COORDINATES           /            COLORS          /           NORMALS         /       TEXTURE COORDINATES    //
@@ -94,45 +89,50 @@ int main()
 		4, 6, 7
 	};
 
-
+	//shaders
+	DazaiEngine::Shader shader("shaders/default.vert", "shaders/default.frag");
+	DazaiEngine::Shader lightShader("shaders/light.vert", "shaders/light.frag");
 	//camera
 	DazaiEngine::Camera camera(width, height, glm::vec3(0.0f, 0.0f, 2.0f));
-
+	//textures
+	DazaiEngine::Texture2d textures[]
+	{
+		DazaiEngine::Texture2d("textures/planks.png","diffuse0", 0, GL_RGBA, GL_UNSIGNED_BYTE),
+		DazaiEngine::Texture2d("textures/planksSpec.png","specular0", 1, GL_RED, GL_UNSIGNED_BYTE)
+	};
+	//meshes
+	//floor
+	std::vector<DazaiEngine::Vertex> vert(vertices, vertices + sizeof(vertices) / sizeof(DazaiEngine::Vertex));
+	std::vector<GLuint> ind(indices, indices + sizeof(indices) / sizeof(GLuint));
+	std::vector<DazaiEngine::Texture2d> tex(textures, textures + sizeof(textures) / sizeof(DazaiEngine::Texture2d));
+	//light
+	std::vector<DazaiEngine::Vertex> lightVerts(lightVertices, lightVertices + sizeof(lightVertices) / sizeof(DazaiEngine::Vertex));
+	std::vector<GLuint> lightInd(lightIndices, lightIndices + sizeof(lightIndices) / sizeof(GLuint));
 	
+
 	glm::mat4 lightModel = glm::mat4(1.0f);
 	glm::vec3 lightPos = glm::vec3(0.5f, 0.5f, 0.5f);
 	glm::vec4 lightColor = { 1.0f,1.0f,1.0f,1.0f };
 	lightModel = glm::translate(lightModel, lightPos);
-	lightShader.bind();
-	lightShader.setMat4("model", lightModel);
-	lightShader.setVec4("lightColor", lightColor);
+	DazaiEngine::Material lightMat(&lightShader, tex);
+	lightMat.shader->bind();
+	lightMat.shader->setMat4("model", lightModel);
+	lightMat.shader->setVec4("lightColor", lightColor);
 
 	
 	glm::mat4 objectModel = glm::mat4(1.0f);
 	glm::vec3 objectPos = glm::vec3(0.5f, 0.0f, 0.5f);
 	objectModel = glm::translate(objectModel,objectPos);
-	shader.bind();
-	shader.setMat4("model", objectModel);
-	shader.setVec4("lightColor", lightColor);
-	shader.setVec3("lightPos", lightPos);
+	DazaiEngine::Material floorMat(&shader, tex);
+	floorMat.bind();
+	floorMat.shader->setMat4("model", objectModel);
+	floorMat.shader->setVec4("lightColor", lightColor);
+	floorMat.shader->setVec3("lightPos", lightPos);
 	
 
-	DazaiEngine::Texture2d textures[]
-	{
-		DazaiEngine::Texture2d ("textures/planks.png","diffuse0", 0, GL_RGBA, GL_UNSIGNED_BYTE),
-	    DazaiEngine::Texture2d ("textures/planksSpec.png","specular0", 1, GL_RED, GL_UNSIGNED_BYTE)
-	};
+	DazaiEngine::Mesh floor(vert, ind, floorMat);
+	DazaiEngine::Mesh light(lightVerts, lightInd,lightMat);
 
-	std::vector<DazaiEngine::Vertex> vert(vertices, vertices + sizeof(vertices) / sizeof(DazaiEngine::Vertex));
-	std::vector<GLuint> ind(indices, indices + sizeof(indices) / sizeof(GLuint));
-	std::vector<DazaiEngine::Texture2d> tex(textures, textures + sizeof(textures) / sizeof(DazaiEngine::Texture2d));
-	DazaiEngine::Mesh floor(vert, ind, tex);
-
-	std::vector<DazaiEngine::Vertex> lightVerts(lightVertices, lightVertices + sizeof(lightVertices) / sizeof(DazaiEngine::Vertex));
-	std::vector<GLuint> lightInd(lightIndices, lightIndices + sizeof(lightIndices) / sizeof(GLuint));
-	DazaiEngine::Mesh light(lightVerts, lightInd, tex);
-
-	
 
 	while (!glfwWindowShouldClose(window)) {
 		//timer
@@ -144,14 +144,15 @@ int main()
 		camera.input(window);
 		camera.updateMatrix(45.0f,0.1f,100.0f);
 		//render
-		floor.draw(shader, camera);
-		light.draw(lightShader,camera);
+		floor.draw(camera);
+		light.draw(camera);
 		
 		//--
 		glfwSwapBuffers(window);
 		glfwPollEvents();
 		//FPS cap
 		DazaiEngine::Time::delayTime();
+	
 	}
 	
 	shader.destroy();

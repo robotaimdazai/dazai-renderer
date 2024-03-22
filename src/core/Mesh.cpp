@@ -2,8 +2,8 @@
 
 namespace DazaiEngine
 {
-	Mesh::Mesh(std::vector<Vertex>& vertices, std::vector<GLuint>& indices, std::vector<Texture2d>& textures):
-		vertices(vertices), indices(indices), textures(textures)
+	Mesh::Mesh(std::vector<Vertex>& vertices, std::vector<GLuint>& indices, Material& material):
+		vertices(vertices), indices(indices), material(material)
 	{
 		vao.bind();
 		Vbo vbo(vertices);
@@ -17,18 +17,18 @@ namespace DazaiEngine
 		vbo.unBind();
 		ebo.unBind();
 	}
-	auto Mesh::draw(Shader& shader, Camera& camera)->void
+	auto Mesh::draw(Camera& camera)->void
 	{
-		shader.bind();
+		material.shader->bind();
 		vao.bind();
 		
-		for (size_t i = 0; i < textures.size(); i++)
+		for (size_t i = 0; i < material.textures.size(); i++)
 		{
-			textures[i].bindToShader(shader, textures[i].texType, textures[i].slot);
-			textures[i].bind();
+			material.textures[i].bindToSlot(*material.shader, material.textures[i].texType, material.textures[i].slot);
+			material.textures[i].bind();
 		}
-		shader.setVec3("camPos", camera.position);
-		camera.bindtoShader(shader, "camMatrix");
+		material.shader->setVec3("camPos", camera.position);
+		camera.bindtoShader(*material.shader, "camMatrix");
 		glDrawElements(GL_TRIANGLES, indices.size(), GL_UNSIGNED_INT, 0);
 	}
 }

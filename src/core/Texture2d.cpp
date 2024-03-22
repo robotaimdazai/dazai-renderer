@@ -22,7 +22,7 @@ namespace DazaiEngine
 		glBindTexture(GL_TEXTURE_2D,0);
 
 	}
-	auto Texture2d::bindToShader(Shader& shader, const char* uniform, unsigned int slot) -> void
+	auto Texture2d::bindToSlot(Shader& shader, const char* uniform, unsigned int slot) -> void
 	{
 		shader.bind();
 		shader.setInt(uniform, GL_TEXTURE0 + slot);
@@ -32,7 +32,7 @@ namespace DazaiEngine
 		glActiveTexture(GL_TEXTURE0 + slot);
 		glBindTexture(GL_TEXTURE_2D, id);
 	}
-	auto Texture2d::unBind() -> void
+	auto Texture2d::unbind() -> void
 	{
 		glBindTexture(GL_TEXTURE_2D, 0);
 	}
