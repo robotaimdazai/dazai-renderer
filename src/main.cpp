@@ -1,7 +1,7 @@
 ﻿// DazaiRenderer.cpp : Defines the entry point for the application.
 //
 #include <iostream>
-#include <glad/glad.h>
+#include "glad/glad.h"
 #include <GLFW/glfw3.h>
 #include "glm/glm.hpp"
 #include "glm/gtc/matrix_transform.hpp"
@@ -17,6 +17,7 @@
 #include "core/Time.hpp"
 #include "core/Mesh.hpp"
 #include "core/Material.hpp"
+#include "core/Model.hpp"
 
 
 const unsigned int width = 800;
@@ -89,6 +90,7 @@ int main()
 		4, 6, 7
 	};
 
+
 	//shaders
 	DazaiEngine::Shader shader("shaders/default.vert", "shaders/default.frag");
 	DazaiEngine::Shader lightShader("shaders/light.vert", "shaders/light.frag");
@@ -100,7 +102,7 @@ int main()
 		DazaiEngine::Texture2d("textures/planks.png","diffuse0", 0, GL_RGBA, GL_UNSIGNED_BYTE),
 		DazaiEngine::Texture2d("textures/planksSpec.png","specular0", 1, GL_RED, GL_UNSIGNED_BYTE)
 	};
-	//meshes
+	//data
 	//floor
 	std::vector<DazaiEngine::Vertex> vert(vertices, vertices + sizeof(vertices) / sizeof(DazaiEngine::Vertex));
 	std::vector<GLuint> ind(indices, indices + sizeof(indices) / sizeof(GLuint));
@@ -109,16 +111,14 @@ int main()
 	std::vector<DazaiEngine::Vertex> lightVerts(lightVertices, lightVertices + sizeof(lightVertices) / sizeof(DazaiEngine::Vertex));
 	std::vector<GLuint> lightInd(lightIndices, lightIndices + sizeof(lightIndices) / sizeof(GLuint));
 	
-
-	glm::mat4 lightModel = glm::mat4(1.0f);
+	glm::mat4 lightMod = glm::mat4(1.0f);
 	glm::vec3 lightPos = glm::vec3(0.5f, 0.5f, 0.5f);
 	glm::vec4 lightColor = { 1.0f,1.0f,1.0f,1.0f };
-	lightModel = glm::translate(lightModel, lightPos);
+	lightMod = glm::translate(lightMod, lightPos);
 	DazaiEngine::Material lightMat(&lightShader, tex);
 	lightMat.shader->bind();
-	lightMat.shader->setMat4("model", lightModel);
+	lightMat.shader->setMat4("model", lightMod);
 	lightMat.shader->setVec4("lightColor", lightColor);
-
 	
 	glm::mat4 objectModel = glm::mat4(1.0f);
 	glm::vec3 objectPos = glm::vec3(0.5f, 0.0f, 0.5f);
@@ -128,12 +128,13 @@ int main()
 	floorMat.shader->setMat4("model", objectModel);
 	floorMat.shader->setVec4("lightColor", lightColor);
 	floorMat.shader->setVec3("lightPos", lightPos);
-	
-
+	//meshes
 	DazaiEngine::Mesh floor(vert, ind, floorMat);
 	DazaiEngine::Mesh light(lightVerts, lightInd,lightMat);
-
-
+	//models
+	DazaiEngine::Model floorModel(floor,floorMat);
+	DazaiEngine::Model lightModel(light,lightMat);
+	//core loop
 	while (!glfwWindowShouldClose(window)) {
 		//timer
 		DazaiEngine::Time::updateDeltaTime();
@@ -144,21 +145,15 @@ int main()
 		camera.input(window);
 		camera.updateMatrix(45.0f,0.1f,100.0f);
 		//render
-		floor.draw(camera);
-		light.draw(camera);
-		
+		floorModel.draw(camera);
+		lightModel.draw(camera);
 		//--
 		glfwSwapBuffers(window);
 		glfwPollEvents();
 		//FPS cap
 		DazaiEngine::Time::delayTime();
-	
 	}
-	
-	shader.destroy();
-
 	glfwDestroyWindow(window);
 	glfwTerminate();
-	
 	return 0;
 }

@@ -1,6 +1,6 @@
 #pragma once
 #include <glad/glad.h>
-#include "../../include/stb/stb_image.h"
+#include "stb/stb_image.h"
 #include "Shader.hpp"
 
 namespace DazaiEngine

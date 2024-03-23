@@ -9,7 +9,7 @@ namespace DazaiEngine
 	class Material
 	{
 	public:
-		Material() = delete;
+		Material() = default;
 		Material(Shader* shader);
 		Material(Shader* shader,std::vector<Texture2d>& textures);
 		auto bind() -> void;

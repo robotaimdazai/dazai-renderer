@@ -12,11 +12,11 @@ namespace DazaiEngine
 	class Mesh
 	{
 	public:
+		Mesh() = default;
+		Mesh(std::vector<Vertex>& vertices, std::vector<GLuint>& indices, Material& material);
 		std::vector<Vertex> vertices;
 		std::vector<GLuint> indices;
 		Vao vao;
-		Mesh(std::vector<Vertex>& vertices, std::vector<GLuint>& indices, Material& material);
-		auto draw(Camera& camera)->void;
-		Material material;
+		auto draw(Shader& shader, std::vector<Texture2d> textures ,Camera& camera)->void;
 	};
 }
