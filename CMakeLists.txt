@@ -15,8 +15,9 @@ if (POLICY CMP0141)
 endif()
 
 
-add_subdirectory("vendor/glfw-3.4")
+add_subdirectory("vendor/glfw")
 add_subdirectory("vendor/glm")
+
 project ("DazaiRenderer")
 set(CMAKE_CXX_STANDARD 20)
 
@@ -36,9 +37,7 @@ file(GLOB_RECURSE MY_SOURCES CONFIGURE_DEPENDS "${CMAKE_CURRENT_SOURCE_DIR}/src/
 
 #file(COPY ${CMAKE_SOURCE_DIR}/resources DESTINATION ${CMAKE_BINARY_DIR})
 
-add_executable (DazaiRenderer "${MY_SOURCES}" "include/glad/glad.h" "src/core/glad.c") #if lib is not with cmake
-
-target_include_directories(DazaiRenderer PUBLIC "${CMAKE_CURRENT_SOURCE_DIR}/include/")
+add_executable (DazaiRenderer "${MY_SOURCES}" "vendor/glad/glad.h" "vendor/glad/glad.c") #if lib is not with cmake, if its header only then dont
 
 target_link_libraries(DazaiRenderer PRIVATE glfw glm)  # keep adding libs here
 

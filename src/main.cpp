@@ -20,6 +20,7 @@
 #include "core/Model.hpp"
 
 
+
 const unsigned int width = 800;
 const unsigned int height = 600;
 
@@ -90,6 +91,7 @@ int main()
 		4, 6, 7
 	};
 
+	
 
 	//shaders
 	DazaiEngine::Shader shader("shaders/default.vert", "shaders/default.frag");
