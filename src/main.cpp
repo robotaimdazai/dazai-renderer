@@ -12,18 +12,16 @@
 #include "core/Ebo.hpp"
 #include "stb/stb_image.h"
 #include "core/Texture2d.hpp"
-#include "util/Util.hpp"
 #include "core/Camera.hpp"
 #include "core/Time.hpp"
 #include "core/Mesh.hpp"
 #include "core/Material.hpp"
 #include "core/Model.hpp"
-
+#include "util/GltfLoader.hpp"
 
 
 const unsigned int width = 800;
 const unsigned int height = 600;
-
 
 int main()
 {
@@ -48,13 +46,13 @@ int main()
 
 	// Vertices coordinates
 	DazaiEngine::Vertex vertices[] =
-	{ //               COORDINATES           /            COLORS          /           NORMALS         /       TEXTURE COORDINATES    //
-		DazaiEngine::Vertex{glm::vec3(-1.0f, 0.0f,  1.0f), glm::vec3(0.0f, 1.0f, 0.0f), glm::vec3(1.0f, 1.0f, 1.0f), glm::vec2(0.0f, 0.0f)},
-		DazaiEngine::Vertex{glm::vec3(-1.0f, 0.0f, -1.0f), glm::vec3(0.0f, 1.0f, 0.0f), glm::vec3(1.0f, 1.0f, 1.0f), glm::vec2(0.0f, 1.0f)},
-		DazaiEngine::Vertex{glm::vec3(1.0f, 0.0f, -1.0f), glm::vec3(0.0f, 1.0f, 0.0f), glm::vec3(1.0f, 1.0f, 1.0f), glm::vec2(1.0f, 1.0f)},
-		DazaiEngine::Vertex{glm::vec3(1.0f, 0.0f,  1.0f), glm::vec3(0.0f, 1.0f, 0.0f), glm::vec3(1.0f, 1.0f, 1.0f), glm::vec2(1.0f, 0.0f)}
+	{
+		//               COORDINATES          /       TEXTURE COORDINATES    /           NORMALS         /            COLORS          //
+		DazaiEngine::Vertex{glm::vec3(-1.0f, 0.0f,  1.0f), glm::vec2(0.0f, 0.0f), glm::vec3(1.0f, 1.0f, 1.0f), glm::vec3(0.0f, 1.0f, 0.0f)},
+		DazaiEngine::Vertex{glm::vec3(-1.0f, 0.0f, -1.0f), glm::vec2(0.0f, 1.0f), glm::vec3(1.0f, 1.0f, 1.0f), glm::vec3(0.0f, 1.0f, 0.0f)},
+		DazaiEngine::Vertex{glm::vec3(1.0f, 0.0f, -1.0f), glm::vec2(1.0f, 1.0f), glm::vec3(1.0f, 1.0f, 1.0f), glm::vec3(0.0f, 1.0f, 0.0f)},
+		DazaiEngine::Vertex{glm::vec3(1.0f, 0.0f,  1.0f), glm::vec2(1.0f, 0.0f), glm::vec3(1.0f, 1.0f, 1.0f), glm::vec3(0.0f, 1.0f, 0.0f)}
 	};
-
 
 	// Indices for vertices order
 	GLuint indices[] =
@@ -90,7 +88,6 @@ int main()
 		4, 5, 6,
 		4, 6, 7
 	};
-
 	
 
 	//shaders
@@ -114,7 +111,7 @@ int main()
 	std::vector<GLuint> lightInd(lightIndices, lightIndices + sizeof(lightIndices) / sizeof(GLuint));
 	
 	glm::mat4 lightMod = glm::mat4(1.0f);
-	glm::vec3 lightPos = glm::vec3(0.5f, 0.5f, 0.5f);
+	glm::vec3 lightPos = glm::vec3(0.5f, 2.0f, 1.0f);
 	glm::vec4 lightColor = { 1.0f,1.0f,1.0f,1.0f };
 	lightMod = glm::translate(lightMod, lightPos);
 	DazaiEngine::Material lightMat(&lightShader, tex);
@@ -131,7 +128,9 @@ int main()
 	floorMat.shader->setVec4("lightColor", lightColor);
 	floorMat.shader->setVec3("lightPos", lightPos);
 	//meshes
-	DazaiEngine::Mesh floor(vert, ind, floorMat);
+	auto results = DazaiEngine::Gltfloader::load("models/sphere.glb");
+	auto model = results.models[0];
+	DazaiEngine::Mesh floor(model.vertices, model.indices, floorMat);
 	DazaiEngine::Mesh light(lightVerts, lightInd,lightMat);
 	//models
 	DazaiEngine::Model floorModel(floor,floorMat);

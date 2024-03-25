@@ -52,8 +52,8 @@ vec4 directionalLight()
 
 vec4 spotLight()
 {
-	float outerCone = 0.85f;
-	float innerCone = 0.9f;
+	float outerCone = 0.2f;
+	float innerCone = 0.3f;
 	vec3 ligtVec = lightPos - currentPos;
 	vec3 lightDirection = normalize(ligtVec);
 	vec3 normalizedNormal = normalize(normal);
@@ -71,5 +71,5 @@ vec4 spotLight()
 
 void main()
 {
-	FragColor = spotLight();
+	FragColor = pointLight();
 };

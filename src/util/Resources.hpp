@@ -50,6 +50,11 @@ namespace DazaiEngine
                return "";
             }
 
+            auto static getPath()->std::string
+            {
+                return RESOURCES;
+            }
+
 
 	};
 }

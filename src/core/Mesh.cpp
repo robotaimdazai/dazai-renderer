@@ -9,9 +9,9 @@ namespace DazaiEngine
 		Vbo vbo(vertices);
 		Ebo ebo(indices);
 		vao.linkAttrib(vbo, 0, 3, GL_FLOAT, sizeof(Vertex), (void*)0);
-		vao.linkAttrib(vbo, 1, 3, GL_FLOAT, sizeof(Vertex), (void*)(3 * sizeof(float)));
-		vao.linkAttrib(vbo, 2, 3, GL_FLOAT, sizeof(Vertex), (void*)(6 * sizeof(float)));
-		vao.linkAttrib(vbo, 3, 2, GL_FLOAT, sizeof(Vertex), (void*)(9 * sizeof(float)));
+		vao.linkAttrib(vbo, 1, 2, GL_FLOAT, sizeof(Vertex), (void*)(3 * sizeof(float)));
+		vao.linkAttrib(vbo, 2, 3, GL_FLOAT, sizeof(Vertex), (void*)(5 * sizeof(float)));
+		vao.linkAttrib(vbo, 3, 3, GL_FLOAT, sizeof(Vertex), (void*)(8 * sizeof(float)));
 
 		vao.unBind();
 		vbo.unBind();
@@ -24,8 +24,8 @@ namespace DazaiEngine
 		
 		for (size_t i = 0; i < textures.size(); i++)
 		{
-			//textures[i].bindToSlot(shader, textures[i].texType, textures[i].slot);
-			//textures[i].bind();
+			textures[i].bindToSlot(shader, textures[i].texType, textures[i].slot);
+			textures[i].bind();
 		}
 		shader.setVec3("camPos", camera.position);
 		camera.bindtoShader(shader, "camMatrix");
