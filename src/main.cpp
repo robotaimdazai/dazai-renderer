@@ -128,12 +128,21 @@ int main()
 	floorMat.shader->setVec4("lightColor", lightColor);
 	floorMat.shader->setVec3("lightPos", lightPos);
 	//meshes
-	auto results = DazaiEngine::Gltfloader::load("models/sphere.glb");
-	auto model = results.models[0];
-	DazaiEngine::Mesh floor(model.vertices, model.indices, floorMat);
+	auto results = DazaiEngine::Gltfloader::load("models/csgo.glb");
+	auto model1 = results.meshes[0];
+	auto model2 = results.meshes[1];
+	auto model3 = results.meshes[2];
+	auto model4 = results.meshes[3];
+	DazaiEngine::Mesh floor1(model1.vertices, model1.indices, floorMat);
+	DazaiEngine::Mesh floor2(model2.vertices, model2.indices, floorMat);
+	DazaiEngine::Mesh floor3(model3.vertices, model3.indices, floorMat);
+	DazaiEngine::Mesh floor4(model4.vertices, model4.indices, floorMat);
 	DazaiEngine::Mesh light(lightVerts, lightInd,lightMat);
 	//models
-	DazaiEngine::Model floorModel(floor,floorMat);
+	DazaiEngine::Model floorModel1(floor1,floorMat);
+	DazaiEngine::Model floorModel2(floor2,floorMat);
+	DazaiEngine::Model floorModel3(floor3,floorMat);
+	DazaiEngine::Model floorModel4(floor4,floorMat);
 	DazaiEngine::Model lightModel(light,lightMat);
 	//core loop
 	while (!glfwWindowShouldClose(window)) {
@@ -146,7 +155,10 @@ int main()
 		camera.input(window);
 		camera.updateMatrix(45.0f,0.1f,100.0f);
 		//render
-		floorModel.draw(camera);
+		floorModel1.draw(camera);
+		floorModel2.draw(camera);
+		floorModel3.draw(camera);
+		floorModel4.draw(camera);
 		lightModel.draw(camera);
 		//--
 		glfwSwapBuffers(window);
