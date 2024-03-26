@@ -106,7 +106,8 @@ namespace DazaiEngine
 							}
 						}
 					}
-					// indices
+					//INDICES
+					//-------
 					auto& indexAccessor = model.accessors[primitive.indices];
 					auto& indexBufferView = model.bufferViews[indexAccessor.bufferView];
 					auto indexStride = indexAccessor.ByteStride(indexBufferView);
@@ -137,12 +138,72 @@ namespace DazaiEngine
 						vertex.color = { 1.0f,1.0f,1.0f };
 						thisMesh.vertices.push_back(vertex);
 					}
+					//TEXTURES
+					//---------
+					int materialIndex = primitive.material;
+					if (materialIndex != -1) 
+					{
+						//baseIndex
+						auto material = model.materials[materialIndex];
+						int baseImageIndex = material.pbrMetallicRoughness.baseColorTexture.index;
+						int specularImageIndex = material.pbrMetallicRoughness.baseColorTexture.index;
+						//baseColorTex
+						if (baseImageIndex != -1)
+						{
+							auto baseColor = model.images[baseImageIndex];
+							Texture2d baseColorTex(&baseColor.image.at(0), baseColor.width, baseColor.height, baseColor.component,
+								"diffuse0", 0, Gltfloader::getImageFormat(baseColor), Gltfloader::getImageType(baseColor));
+							thisMesh.textures.emplace_back(std::move(baseColorTex));
+						}
+						//specularTex
+						if (specularImageIndex != -1)
+						{
+							auto specular = model.images[specularImageIndex];
+							Texture2d specularTex(&specular.image.at(0), specular.width, specular.height, specular.component,
+								"specular0", 0, Gltfloader::getImageFormat(specular), Gltfloader::getImageType(specular));
+							thisMesh.textures.emplace_back(std::move(specularTex));
+						}
+					}
+					//push to results
 					results.meshes.push_back(thisMesh);
 				}
-				
 			}
 			return results;
 		}
+
+		private:
+			auto static getImageFormat(const tinygltf::Image& image) -> GLenum
+			{
+				GLenum format = GL_RGBA;
+				if (image.component == 1)
+				{
+					format = GL_RED;
+				}
+				else if (image.component == 2)
+				{
+					format = GL_RG;
+				}
+				else if (image.component == 3)
+				{
+					format = GL_RGB;
+				}
+
+				return format;
+			}
+
+			auto static getImageType(const tinygltf::Image& image) -> GLenum
+			{
+				GLenum type = GL_UNSIGNED_BYTE;
+				if (image.bits == 8)
+				{
+					// ok
+				}
+				else if (image.bits == 16)
+				{
+					type = GL_UNSIGNED_SHORT;
+				}
+				return type;
+			}
 		
 	};
 } 

@@ -88,7 +88,9 @@ int main()
 		4, 5, 6,
 		4, 6, 7
 	};
-	
+	//load glb
+	auto results = DazaiEngine::Gltfloader::load("models/csgo.glb");
+
 
 	//shaders
 	DazaiEngine::Shader shader("shaders/default.vert", "shaders/default.frag");
@@ -122,13 +124,13 @@ int main()
 	glm::mat4 objectModel = glm::mat4(1.0f);
 	glm::vec3 objectPos = glm::vec3(0.5f, 0.0f, 0.5f);
 	objectModel = glm::translate(objectModel,objectPos);
-	DazaiEngine::Material floorMat(&shader, tex);
+	DazaiEngine::Material floorMat(&shader, results.meshes[0].textures);
 	floorMat.bind();
 	floorMat.shader->setMat4("model", objectModel);
 	floorMat.shader->setVec4("lightColor", lightColor);
 	floorMat.shader->setVec3("lightPos", lightPos);
 	//meshes
-	auto results = DazaiEngine::Gltfloader::load("models/csgo.glb");
+	
 	auto model1 = results.meshes[0];
 	auto model2 = results.meshes[1];
 	auto model3 = results.meshes[2];
