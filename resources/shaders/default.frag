@@ -2,17 +2,19 @@
 
 out vec4 FragColor;
 
-in vec3 color;
-in vec3 normal;
-in vec2 texCoord;
 in vec3 currentPos;
+in vec2 texCoord;
+in vec3 normal;
+in vec3 color;
+
+
 
 uniform sampler2D diffuse0;
 uniform sampler2D specular0;
 uniform vec4 lightColor;
 uniform vec3 lightPos;
 uniform vec3 camPos;
-uniform float ambient = 0.2f;
+uniform float ambient = 0.4f;
 uniform float specularLight =0.5f;
 uniform float specPower = 16;
 
@@ -71,5 +73,5 @@ vec4 spotLight()
 
 void main()
 {
-	FragColor = pointLight();
+	FragColor = directionalLight();
 };

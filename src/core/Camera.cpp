@@ -22,41 +22,41 @@ namespace DazaiEngine
 	auto Camera::input(GLFWwindow* window) -> void
 	{
 		//keyboard
-		speed *= Time::deltaTime;
+		currentSpeed *= Time::deltaTime;
 		if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS)
 		{
-			position += speed * forward;
+			position += currentSpeed * forward;
 		}
 		if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS)
 		{
-			position += speed * - glm::normalize(glm::cross(forward, up));
+			position += currentSpeed * - glm::normalize(glm::cross(forward, up));
 		}
 		if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS)
 		{
-			position += speed * -forward;
+			position += currentSpeed * -forward;
 		}
 		if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS)
 		{
-			position += speed * glm::normalize(glm::cross(forward, up));
+			position += currentSpeed * glm::normalize(glm::cross(forward, up));
 		}
-		if (glfwGetKey(window, GLFW_KEY_SPACE) == GLFW_PRESS)
+		if (glfwGetKey(window, GLFW_KEY_E) == GLFW_PRESS)
 		{
-			position += speed * up;
+			position += currentSpeed * up;
 		}
-		if (glfwGetKey(window, GLFW_KEY_LEFT_CONTROL) == GLFW_PRESS)
+		if (glfwGetKey(window, GLFW_KEY_Q) == GLFW_PRESS)
 		{
-			position += speed * -up;
+			position += currentSpeed * -up;
 		}
 		if (glfwGetKey(window, GLFW_KEY_LEFT_SHIFT) == GLFW_PRESS)
 		{
-			speed = 1.4f;
+			currentSpeed = maxSpeed;
 		}
 		else if (glfwGetKey(window, GLFW_KEY_LEFT_SHIFT) == GLFW_RELEASE)
 		{
-			speed = 0.7f;
+			currentSpeed = normalSpeed;
 		}
 		//mouse
-		if (glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_LEFT) == GLFW_PRESS)
+		if (glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_RIGHT) == GLFW_PRESS)
 		{
 			glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_HIDDEN);
 			if (mFirstClick)

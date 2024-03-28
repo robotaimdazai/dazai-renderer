@@ -25,8 +25,10 @@ namespace DazaiEngine
 		glm::vec3 up{0.0f,1.0f,0.0f};
 		int width;
 		int height;
-		float speed{ 0.7f };
+		float currentSpeed{ 1.0f };
 		float sensitivity{ 10000.0f };
+		float maxSpeed{ 6.0f };
+		float normalSpeed{ 2.0f };
 
 	private:
 		bool mFirstClick{true};

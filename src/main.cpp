@@ -17,7 +17,7 @@
 #include "core/Mesh.hpp"
 #include "core/Material.hpp"
 #include "core/Model.hpp"
-#include "util/GltfLoader.hpp"
+#include "core/Scene.hpp"
 
 
 const unsigned int width = 800;
@@ -89,8 +89,7 @@ int main()
 		4, 6, 7
 	};
 	//load glb
-	auto results = DazaiEngine::Gltfloader::load("models/csgo.glb");
-
+	//auto results = DazaiEngine::Gltfloader::load("models/csgo.glb");
 
 	//shaders
 	DazaiEngine::Shader shader("shaders/default.vert", "shaders/default.frag");
@@ -112,40 +111,18 @@ int main()
 	std::vector<DazaiEngine::Vertex> lightVerts(lightVertices, lightVertices + sizeof(lightVertices) / sizeof(DazaiEngine::Vertex));
 	std::vector<GLuint> lightInd(lightIndices, lightIndices + sizeof(lightIndices) / sizeof(GLuint));
 	
-	glm::mat4 lightMod = glm::mat4(1.0f);
-	glm::vec3 lightPos = glm::vec3(0.5f, 2.0f, 1.0f);
-	glm::vec4 lightColor = { 1.0f,1.0f,1.0f,1.0f };
-	lightMod = glm::translate(lightMod, lightPos);
+	//create scene
+	DazaiEngine::Scene scene;
+	glm::vec3 lightPos = { 0,2.0f,0 };
+	scene.lightColor = { 1.0f,1.0f,1.0f,1.0f };
+	scene.lightPos = lightPos;
+
 	DazaiEngine::Material lightMat(&lightShader, tex);
-	lightMat.shader->bind();
-	lightMat.shader->setMat4("model", lightMod);
-	lightMat.shader->setVec4("lightColor", lightColor);
-	
-	glm::mat4 objectModel = glm::mat4(1.0f);
-	glm::vec3 objectPos = glm::vec3(0.5f, 0.0f, 0.5f);
-	objectModel = glm::translate(objectModel,objectPos);
-	DazaiEngine::Material floorMat(&shader, results.meshes[0].textures);
-	floorMat.bind();
-	floorMat.shader->setMat4("model", objectModel);
-	floorMat.shader->setVec4("lightColor", lightColor);
-	floorMat.shader->setVec3("lightPos", lightPos);
 	//meshes
-	
-	auto model1 = results.meshes[0];
-	auto model2 = results.meshes[1];
-	auto model3 = results.meshes[2];
-	auto model4 = results.meshes[3];
-	DazaiEngine::Mesh floor1(model1.vertices, model1.indices, floorMat);
-	DazaiEngine::Mesh floor2(model2.vertices, model2.indices, floorMat);
-	DazaiEngine::Mesh floor3(model3.vertices, model3.indices, floorMat);
-	DazaiEngine::Mesh floor4(model4.vertices, model4.indices, floorMat);
-	DazaiEngine::Mesh light(lightVerts, lightInd,lightMat);
+	DazaiEngine::Mesh light(lightVerts, lightInd);
 	//models
-	DazaiEngine::Model floorModel1(floor1,floorMat);
-	DazaiEngine::Model floorModel2(floor2,floorMat);
-	DazaiEngine::Model floorModel3(floor3,floorMat);
-	DazaiEngine::Model floorModel4(floor4,floorMat);
-	DazaiEngine::Model lightModel(light,lightMat);
+	DazaiEngine::Model model("models/cs.glb", &shader);
+	model.transform.position = { 0,0,0 };
 	//core loop
 	while (!glfwWindowShouldClose(window)) {
 		//timer
@@ -157,11 +134,7 @@ int main()
 		camera.input(window);
 		camera.updateMatrix(45.0f,0.1f,100.0f);
 		//render
-		floorModel1.draw(camera);
-		floorModel2.draw(camera);
-		floorModel3.draw(camera);
-		floorModel4.draw(camera);
-		lightModel.draw(camera);
+		model.draw(camera,scene);
 		//--
 		glfwSwapBuffers(window);
 		glfwPollEvents();

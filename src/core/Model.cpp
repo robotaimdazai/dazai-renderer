@@ -3,27 +3,33 @@
 namespace DazaiEngine
 {
 	
-	Model::Model(const char* file)
+	Model::Model(const char* file, Shader* shader)
+	{
+		auto result = Gltfloader::load(file);
+		for (size_t i = 0; i < result.meshes.size(); i++)
+		{
+			Mesh thisMesh(result.meshes[i].vertices, result.meshes[i].indices);
+			Material thisMaterial(shader,result.meshes[i].textures);
+			meshes.emplace_back(std::move(thisMesh));
+			materials.emplace_back(std::move(thisMaterial));
+		}
+	}
+
+	Model::Model(std::vector<Mesh>& meshes, std::vector<Material>& materials):
+		materials(materials),meshes(meshes)
 	{
 	}
-	Model::Model(Mesh& mesh):mesh(mesh)
+	Model::Model(Mesh& mesh, Material& material)
 	{
+		meshes.push_back(mesh);
+		materials.push_back(material);
 	}
-	Model::Model(const char* file, Material& material):
-		material(material)
+	auto Model::draw(Camera& camera, const Scene& scene) -> void
 	{
-	}
-	Model::Model(Material& material):
-		material(material)
-	{
-	}
-	Model::Model(Mesh& mesh, Material& material) :
-		mesh(mesh), material(material)
-	{
-	}
-	auto Model::draw(Camera& camera) -> void
-	{
-		mesh.draw(*material.shader, material.textures, camera);
+		for (size_t i = 0; i < meshes.size(); i++)
+		{
+			meshes[i].draw(*materials[i].shader, materials[i].textures, camera, scene,transform.position);
+		}
 	}
 
 }

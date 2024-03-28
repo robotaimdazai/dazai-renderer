@@ -15,6 +15,7 @@ namespace DazaiEngine
 		auto bind() -> void;
 		auto unbind() -> void;
 		auto destroy() -> void;
+		auto flipRawTecture(unsigned char* imageData, int width, int height, int numChannels) -> unsigned char*;
 		unsigned int id;
 		int width;
 		int height;

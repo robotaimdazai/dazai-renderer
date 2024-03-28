@@ -6,6 +6,7 @@
 #include "Camera.hpp"
 #include "Texture2d.hpp"
 #include "Material.hpp"
+#include "Scene.hpp"
 
 namespace DazaiEngine 
 {
@@ -13,10 +14,10 @@ namespace DazaiEngine
 	{
 	public:
 		Mesh() = default;
-		Mesh(std::vector<Vertex>& vertices, std::vector<GLuint>& indices, Material& material);
+		Mesh(std::vector<Vertex>& vertices, std::vector<GLuint>& indices);
 		std::vector<Vertex> vertices;
 		std::vector<GLuint> indices;
+		auto draw(Shader& shader, std::vector<Texture2d> textures, Camera& camera, const Scene& scene, glm::vec3& position)->void;
 		Vao vao;
-		auto draw(Shader& shader, std::vector<Texture2d> textures ,Camera& camera)->void;
 	};
 }
