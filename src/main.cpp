@@ -113,9 +113,10 @@ int main()
 	
 	//create scene
 	DazaiEngine::Scene scene;
-	glm::vec3 lightPos = { 0,2.0f,0 };
+	DazaiEngine::Transform lightTransform;
+	lightTransform.position = { 0.5,2.5f,0.5 };
 	scene.lightColor = { 1.0f,1.0f,1.0f,1.0f };
-	scene.lightPos = lightPos;
+	scene.lightPos = lightTransform.position;
 
 	DazaiEngine::Material lightMat(&lightShader, tex);
 	//meshes
@@ -123,6 +124,8 @@ int main()
 	//models
 	DazaiEngine::Model model("models/cs.glb", &shader);
 	model.transform.position = { 0,0,0 };
+	model.transform.rotation = { 0,0,0,0 };
+	//model.transform.scale = { 1,1,1 };
 	//core loop
 	while (!glfwWindowShouldClose(window)) {
 		//timer
@@ -135,6 +138,8 @@ int main()
 		camera.updateMatrix(45.0f,0.1f,100.0f);
 		//render
 		model.draw(camera,scene);
+		light.draw(lightShader, tex,camera,scene, 
+			lightTransform.position,lightTransform.rotation,lightTransform.scale);
 		//--
 		glfwSwapBuffers(window);
 		glfwPollEvents();

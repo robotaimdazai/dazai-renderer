@@ -17,7 +17,8 @@ namespace DazaiEngine
 		Mesh(std::vector<Vertex>& vertices, std::vector<GLuint>& indices);
 		std::vector<Vertex> vertices;
 		std::vector<GLuint> indices;
-		auto draw(Shader& shader, std::vector<Texture2d> textures, Camera& camera, const Scene& scene, glm::vec3& position)->void;
+		auto draw(Shader& shader, std::vector<Texture2d> textures, Camera& camera, const Scene& scene, 
+			glm::vec3& position, glm::quat& rotation, glm::vec3& scale)->void;
 		Vao vao;
 	};
 }

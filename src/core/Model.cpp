@@ -28,7 +28,8 @@ namespace DazaiEngine
 	{
 		for (size_t i = 0; i < meshes.size(); i++)
 		{
-			meshes[i].draw(*materials[i].shader, materials[i].textures, camera, scene,transform.position);
+			meshes[i].draw(*materials[i].shader, materials[i].textures, camera, scene,
+				transform.position,transform.rotation,transform.scale);
 		}
 	}
 

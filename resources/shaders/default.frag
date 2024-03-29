@@ -14,9 +14,9 @@ uniform sampler2D specular0;
 uniform vec4 lightColor;
 uniform vec3 lightPos;
 uniform vec3 camPos;
-uniform float ambient = 0.4f;
-uniform float specularLight =0.5f;
-uniform float specPower = 16;
+uniform float ambient = 0.45f;
+uniform float specularLight =0.6f;
+uniform float specPower = 32;
 
 vec4 pointLight()
 {

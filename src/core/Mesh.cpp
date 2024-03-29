@@ -16,16 +16,25 @@ namespace DazaiEngine
 		vbo.unBind();
 		ebo.unBind();
 	}
-	auto Mesh::draw(Shader& shader, std::vector<Texture2d> textures, Camera& camera, const Scene& scene, glm::vec3& position)->void
+	auto Mesh::draw(Shader& shader, std::vector<Texture2d> textures, Camera& camera, const Scene& scene, 
+		glm::vec3& position, glm::quat& rotation, glm::vec3& scale
+		)->void
 	{
 		//create modelMatrix
-		glm::mat4 modelMatrix = glm::mat4(1.0f);
-		modelMatrix = glm::translate(modelMatrix, position);
+		glm::mat4 trans = glm::mat4(1.0f);
+		glm::mat4 rot = glm::mat4(1.0f);
+		glm::mat4 sca = glm::mat4(1.0f);
+		
+		trans = glm::translate(trans, position);
+		rot = glm::mat4_cast(rotation);
+		sca = glm::scale(sca, scale);
 		//bind to shader
 		shader.bind();
 		shader.setVec4(Scene::LIGHT_COLOR_UNIFORM,scene.lightColor);
 		shader.setVec3(Scene::LIGHT_POS_UNIFORM,scene.lightPos);
-		shader.setMat4("model", modelMatrix);
+		shader.setMat4("translation", trans);
+		shader.setMat4("rotation", rot);
+		shader.setMat4("scale", sca);
 		
 		vao.bind();
 		
