@@ -42,6 +42,8 @@ int main()
 	gladLoadGL();
 
 	glEnable(GL_DEPTH_TEST);
+	glEnable(GL_STENCIL_TEST);
+	glStencilOp(GL_KEEP, GL_KEEP, GL_REPLACE);
 	glViewport(0,0,width,height); 
 	// Vertices coordinates
 	DazaiEngine::Vertex vertices[] =
@@ -93,6 +95,7 @@ int main()
 	//shaders
 	DazaiEngine::Shader shader("shaders/default.vert", "shaders/default.frag");
 	DazaiEngine::Shader lightShader("shaders/light.vert", "shaders/light.frag");
+	DazaiEngine::Shader outlineShader("shaders/outline.vert", "shaders/light.frag");
 	//camera
 	DazaiEngine::Camera camera(width, height, glm::vec3(0.0f, 0.0f, 2.0f));
 	//textures
@@ -118,6 +121,7 @@ int main()
 	scene.lightPos = lightTransform.position;
 
 	DazaiEngine::Material lightMat(&lightShader, tex);
+	DazaiEngine::Material outlineMaterial(&outlineShader, tex);
 	//meshes
 	DazaiEngine::Mesh light(lightVerts, lightInd);
 	//models
@@ -130,15 +134,26 @@ int main()
 		//timer
 		DazaiEngine::Time::updateDeltaTime();
 		//camera
-		glClearColor(0.85f, 0.85f, 0.9f, 1.0f);
-		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+		glClearColor(0.1f, 0.1f, 0.1f, 1.0f);
+		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
 		shader.bind();
 		camera.input(window);
 		camera.updateMatrix(45.0f,0.1f,100.0f);
 		//render
+		glStencilFunc(GL_ALWAYS, 1, 0xff);
+		glStencilMask(0xff);
 		model.draw(camera,scene);
-		light.draw(lightShader, tex,camera,scene, 
-			lightTransform.position,lightTransform.rotation,lightTransform.scale);
+		glStencilFunc(GL_NOTEQUAL,1, 0xff);
+		glStencilMask(0x00);
+		glDisable(GL_DEPTH_TEST);
+		outlineShader.bind();
+		outlineShader.setFloat("outlining", 0.02f);
+		model.draw(camera, scene, outlineMaterial);
+		glStencilMask(0xff);
+		glStencilFunc(GL_ALWAYS, 0, 0xff);
+		glEnable(GL_DEPTH_TEST);
+		//light.draw(lightShader, tex,camera,scene, lightTransform.position,lightTransform.rotation,lightTransform.scale);
+		
 		//--
 		glfwSwapBuffers(window);
 		glfwPollEvents();

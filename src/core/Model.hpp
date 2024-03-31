@@ -16,6 +16,7 @@ namespace DazaiEngine
 		Model(std::vector<Mesh>& meshes, std::vector<Material>& materials);
 		Model(Mesh& mesh,Material& material);
 		auto draw(Camera& camera, const Scene& scene)->void;
+		auto draw(Camera& camera, const Scene& scene, Material& material)->void;
 		std::vector<Mesh> meshes;
 		std::vector<Material> materials;
 		Transform transform;
