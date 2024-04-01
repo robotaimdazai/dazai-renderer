@@ -40,11 +40,14 @@ int main()
 
 	glfwMakeContextCurrent(window);
 	gladLoadGL();
+	glfwSwapInterval(0);
 
 	glEnable(GL_DEPTH_TEST);
 	glEnable(GL_STENCIL_TEST);
 	glStencilOp(GL_KEEP, GL_KEEP, GL_REPLACE);
 	glViewport(0,0,width,height); 
+	glEnable(GL_CULL_FACE);
+	glCullFace(GL_BACK);
 	// Vertices coordinates
 	DazaiEngine::Vertex vertices[] =
 	{
@@ -130,9 +133,14 @@ int main()
 	model.transform.rotation = { 0,0,0,0 };
 	//model.transform.scale = { 1,1,1 };
 	//core loop
+	
 	while (!glfwWindowShouldClose(window)) {
 		//timer
 		DazaiEngine::Time::updateDeltaTime();
+
+		std::string windowText = "FPS: " + std::to_string(DazaiEngine::Time::fps())+ 
+			" MS: " + std::to_string(DazaiEngine::Time::deltaTime * 1000.0f);
+		glfwSetWindowTitle(window, windowText.c_str());
 		//camera
 		glClearColor(0.1f, 0.1f, 0.1f, 1.0f);
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
@@ -141,15 +149,15 @@ int main()
 		camera.updateMatrix(45.0f,0.1f,100.0f);
 		//render
 		glStencilFunc(GL_ALWAYS, 1, 0xff);
-		glStencilMask(0xff);
+		//glStencilMask(0xff);
 		model.draw(camera,scene);
 		glStencilFunc(GL_NOTEQUAL,1, 0xff);
-		glStencilMask(0x00);
+		//glStencilMask(0x00);
 		glDisable(GL_DEPTH_TEST);
 		outlineShader.bind();
 		outlineShader.setFloat("outlining", 0.02f);
 		model.draw(camera, scene, outlineMaterial);
-		glStencilMask(0xff);
+		//glStencilMask(0xff);
 		glStencilFunc(GL_ALWAYS, 0, 0xff);
 		glEnable(GL_DEPTH_TEST);
 		//light.draw(lightShader, tex,camera,scene, lightTransform.position,lightTransform.rotation,lightTransform.scale);
