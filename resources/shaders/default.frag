@@ -52,6 +52,23 @@ vec4 directionalLight()
 			(texture(specular0, texCoord).r * specular ) * lightColor);
 }
 
+vec4 directionalLightWithAlpha()
+{
+	vec3 lightDirection = normalize(vec3(0.0f,1.0f,0.0f));
+	vec3 normalizedNormal = normalize(normal);
+	float diffuse = max(dot(normalizedNormal,lightDirection),0.0f);
+	vec3 viewDirection = normalize(camPos- currentPos);
+	vec3 reflectionDirection = reflect(-lightDirection,normalizedNormal);
+	float specAmount = pow(max(dot(viewDirection,reflectionDirection),0.0f),specPower);
+	float specular = specAmount * specularLight;
+	//discard fragment if
+	if(texture(diffuse0, texCoord).a<0.1)
+		discard;
+	//final
+	return (texture(diffuse0, texCoord) * (diffuse + ambient) + 
+			(texture(specular0, texCoord).r * specular ) * lightColor);
+}
+
 vec4 spotLight()
 {
 	float outerCone = 0.2f;
@@ -92,5 +109,5 @@ void main()
 	//float depth  = logisticDepth(gl_FragCoord.z);
 	//FragColor = directionalLight() * (1.0f - depth) + vec4(depth * vec3(0.85f, 0.85f, 0.90f), 1.0f);
 	//----
-	FragColor = directionalLight();
+	FragColor = directionalLightWithAlpha();
 };

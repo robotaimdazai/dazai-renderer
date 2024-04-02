@@ -46,5 +46,10 @@ namespace DazaiEngine
 		shader.setVec3("camPos", camera.position);
 		camera.bindtoShader(shader, "camMatrix");
 		glDrawElements(GL_TRIANGLES, indices.size(), GL_UNSIGNED_INT, 0);
+
+		for (size_t i = 0; i < textures.size(); i++)
+		{
+			textures[i].unbind();
+		}
 	}
 }

@@ -18,6 +18,9 @@
 #include "core/Material.hpp"
 #include "core/Model.hpp"
 #include "core/Scene.hpp"
+#include "core/FrameBuffer.hpp"
+#include "core/FrameBufferTexture2d.hpp"
+#include "core/RenderBuffer.hpp"
 
 
 const unsigned int width = 800;
@@ -40,9 +43,7 @@ int main()
 
 	glfwMakeContextCurrent(window);
 	gladLoadGL();
-	glfwSwapInterval(0);
-
-	glEnable(GL_DEPTH_TEST);
+	//glfwSwapInterval(0);
 	glEnable(GL_STENCIL_TEST);
 	glStencilOp(GL_KEEP, GL_KEEP, GL_REPLACE);
 	glViewport(0,0,width,height); 
@@ -99,6 +100,9 @@ int main()
 	DazaiEngine::Shader shader("shaders/default.vert", "shaders/default.frag");
 	DazaiEngine::Shader lightShader("shaders/light.vert", "shaders/light.frag");
 	DazaiEngine::Shader outlineShader("shaders/outline.vert", "shaders/light.frag");
+	DazaiEngine::Shader frameBufferShader("shaders/framebuffer.vert", "shaders/framebuffer.frag");
+	frameBufferShader.bind();
+	frameBufferShader.setInt("screenTexture",0);
 	//camera
 	DazaiEngine::Camera camera(width, height, glm::vec3(0.0f, 0.0f, 2.0f));
 	//textures
@@ -133,6 +137,11 @@ int main()
 	model.transform.rotation = { 0,0,0,0 };
 	//model.transform.scale = { 1,1,1 };
 	//core loop
+	//framebuffer
+	DazaiEngine::FrameBuffer fb;
+	DazaiEngine::FrameBufferTexture2d fbTex(width,height,0);
+	DazaiEngine::RenderBuffer rb(width,height);
+	fb.unbind();
 	
 	while (!glfwWindowShouldClose(window)) {
 		//timer
@@ -142,25 +151,31 @@ int main()
 			" MS: " + std::to_string(DazaiEngine::Time::deltaTime * 1000.0f);
 		glfwSetWindowTitle(window, windowText.c_str());
 		//camera
+		//framebuffer
+		fb.bind();
 		glClearColor(0.1f, 0.1f, 0.1f, 1.0f);
-		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
+		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT );
+		glEnable(GL_DEPTH_TEST);
 		shader.bind();
 		camera.input(window);
 		camera.updateMatrix(45.0f,0.1f,100.0f);
 		//render
 		glStencilFunc(GL_ALWAYS, 1, 0xff);
-		//glStencilMask(0xff);
 		model.draw(camera,scene);
 		glStencilFunc(GL_NOTEQUAL,1, 0xff);
-		//glStencilMask(0x00);
 		glDisable(GL_DEPTH_TEST);
 		outlineShader.bind();
 		outlineShader.setFloat("outlining", 0.02f);
 		model.draw(camera, scene, outlineMaterial);
-		//glStencilMask(0xff);
 		glStencilFunc(GL_ALWAYS, 0, 0xff);
 		glEnable(GL_DEPTH_TEST);
 		//light.draw(lightShader, tex,camera,scene, lightTransform.position,lightTransform.rotation,lightTransform.scale);
+		fb.unbind();
+		frameBufferShader.bind();
+		fb.bindVao();
+		glDisable(GL_DEPTH_TEST); // dont do on framebuffer Rect
+		fbTex.bind();
+		glDrawArrays(GL_TRIANGLES,0,6);
 		
 		//--
 		glfwSwapBuffers(window);
