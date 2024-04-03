@@ -34,10 +34,10 @@ namespace DazaiEngine
             }
 
             auto static loadRawTexture(const std::string& path, int* width, int* height,
-                int* numChannels, int desiredChannels)->unsigned char*
+                int* numChannels, int desiredChannels, bool flipVertical = true)->unsigned char*
             {
                 std::string resolvedPath = RESOURCES + path;
-                stbi_set_flip_vertically_on_load(true);
+                    stbi_set_flip_vertically_on_load(flipVertical);
                 return stbi_load(resolvedPath.c_str(), width, height, numChannels, 0);
             }
 

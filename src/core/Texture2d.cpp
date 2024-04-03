@@ -7,7 +7,6 @@ namespace DazaiEngine
 	{
 		//generations
 		unsigned char* bytes = Resources::loadRawTexture(path, &width, &height, &numChannels, 0);
-		stbi_set_flip_vertically_on_load(true);
 		glGenTextures(1,&id);
 		glActiveTexture(GL_TEXTURE0 + slot);
 		glBindTexture(GL_TEXTURE_2D,id);
@@ -36,7 +35,7 @@ namespace DazaiEngine
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
-		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width, height, 0, format, pixelType, flipRawTecture(bytes,width,height,numChannels));
+		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width, height, 0, format, pixelType, bytes);
 		//mipmaps
 		//glGenerateMipmap(GL_TEXTURE_2D);
 		glBindTexture(GL_TEXTURE_2D, 0);
@@ -62,6 +61,7 @@ namespace DazaiEngine
 
 	auto Texture2d::flipRawTecture(unsigned char* imageData, int width, int height, int numChannels) -> unsigned char*
 	{
+
 		// Calculate the size of one row of pixels in bytes
 		int rowSize = width * numChannels;
 

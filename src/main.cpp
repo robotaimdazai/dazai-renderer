@@ -21,6 +21,8 @@
 #include "core/FrameBuffer.hpp"
 #include "core/FrameBufferTexture2d.hpp"
 #include "core/RenderBuffer.hpp"
+#include "core/TextureCubemap.hpp"
+#include "core/Skybox.hpp"
 
 
 const unsigned int width = 800;
@@ -47,8 +49,8 @@ int main()
 	glEnable(GL_STENCIL_TEST);
 	glStencilOp(GL_KEEP, GL_KEEP, GL_REPLACE);
 	glViewport(0,0,width,height); 
-	glEnable(GL_CULL_FACE);
-	glCullFace(GL_BACK);
+	//glEnable(GL_CULL_FACE);
+	//glCullFace(GL_BACK);
 	// Vertices coordinates
 	DazaiEngine::Vertex vertices[] =
 	{
@@ -93,6 +95,7 @@ int main()
 		4, 5, 6,
 		4, 6, 7
 	};
+
 	//load glb
 	//auto results = DazaiEngine::Gltfloader::load("models/csgo.glb");
 
@@ -101,8 +104,11 @@ int main()
 	DazaiEngine::Shader lightShader("shaders/light.vert", "shaders/light.frag");
 	DazaiEngine::Shader outlineShader("shaders/outline.vert", "shaders/light.frag");
 	DazaiEngine::Shader frameBufferShader("shaders/framebuffer.vert", "shaders/framebuffer.frag");
+	DazaiEngine::Shader skyboxShader("shaders/skybox.vert", "shaders/skybox.frag");
 	frameBufferShader.bind();
 	frameBufferShader.setInt("screenTexture",0);
+	skyboxShader.bind();
+	skyboxShader.setInt("skybox", 0);
 	//camera
 	DazaiEngine::Camera camera(width, height, glm::vec3(0.0f, 0.0f, 2.0f));
 	//textures
@@ -111,6 +117,15 @@ int main()
 		DazaiEngine::Texture2d("textures/planks.png","diffuse0", 0, GL_RGBA, GL_UNSIGNED_BYTE),
 		DazaiEngine::Texture2d("textures/planksSpec.png","specular0", 1, GL_RED, GL_UNSIGNED_BYTE)
 	};
+	DazaiEngine::TextureCubemap skyboxTex
+	(
+		"textures/right.jpg",
+		"textures/left.jpg",
+		"textures/top.jpg",
+		"textures/bottom.jpg",
+		"textures/front.jpg",
+		"textures/back.jpg"
+	);
 	//data
 	//floor
 	std::vector<DazaiEngine::Vertex> vert(vertices, vertices + sizeof(vertices) / sizeof(DazaiEngine::Vertex));
@@ -135,14 +150,16 @@ int main()
 	DazaiEngine::Model model("models/cs.glb", &shader);
 	model.transform.position = { 0,0,0 };
 	model.transform.rotation = { 0,0,0,0 };
+	//skybox
+	DazaiEngine::Skybox skybox;
 	//model.transform.scale = { 1,1,1 };
-	//core loop
+	// -------------------------------------------------------------------------------
 	//framebuffer
 	DazaiEngine::FrameBuffer fb;
 	DazaiEngine::FrameBufferTexture2d fbTex(width,height,0);
 	DazaiEngine::RenderBuffer rb(width,height);
 	fb.unbind();
-	
+	//core loop
 	while (!glfwWindowShouldClose(window)) {
 		//timer
 		DazaiEngine::Time::updateDeltaTime();
@@ -169,6 +186,9 @@ int main()
 		model.draw(camera, scene, outlineMaterial);
 		glStencilFunc(GL_ALWAYS, 0, 0xff);
 		glEnable(GL_DEPTH_TEST);
+		//draw skybox
+		skybox.draw(skyboxShader, skyboxTex, camera);
+
 		//light.draw(lightShader, tex,camera,scene, lightTransform.position,lightTransform.rotation,lightTransform.scale);
 		fb.unbind();
 		frameBufferShader.bind();
