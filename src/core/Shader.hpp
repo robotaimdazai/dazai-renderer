@@ -16,7 +16,7 @@ namespace DazaiEngine
 
 	public:
 		Shader() = default;
-		Shader(const std::string& vertPath, const std::string& fragPath);
+		Shader(const std::string& vertPath, const std::string& fragPath, const std::string& geometryShader="");
 		~Shader();
 		auto bind() -> void;
 		auto unbind()->void;

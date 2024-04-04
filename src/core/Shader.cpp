@@ -3,43 +3,51 @@
 
 namespace DazaiEngine 
 {
-	Shader::Shader(const std::string& vertPath, const std::string& fragPath)
+	Shader::Shader(const std::string& vertPath, const std::string& fragPath, const std::string& geometryShader)
 	{
 		auto vertId = glCreateShader(GL_VERTEX_SHADER);
 		auto fragId = glCreateShader(GL_FRAGMENT_SHADER);
+		auto geoId = glCreateShader(GL_GEOMETRY_SHADER);
 		const std::string  vertSrc = Resources::readTextFile(vertPath);
 		const std::string  fragSrc = Resources::readTextFile(fragPath);
+		const std::string  geoSrc =  Resources::readTextFile(geometryShader);
 		const char* vertSrcPtr = vertSrc.c_str();
 		const char* fragSrcPtr = fragSrc.c_str();
+		const char* geoSrcPtr = geoSrc.c_str();
+		const bool hasGeoShader =geoSrc.compare("") != 0;
 		if (vertSrcPtr == "" || fragSrcPtr == "")
 		{
 			std::cout << "Shader:: Shader source is null" << std::endl;
 		}
 		else 
 		{
+			id = glCreateProgram();
 			glShaderSource(vertId, 1, &vertSrcPtr, NULL);
 			glShaderSource(fragId, 1, &fragSrcPtr, NULL);
 			glCompileShader(vertId);
 			glCompileShader(fragId);
-
-			GLuint shaderProgram = glCreateProgram();
-			id = shaderProgram;
-			glAttachShader(shaderProgram, vertId);
-			glAttachShader(shaderProgram, fragId);
-			glLinkProgram(shaderProgram);
-
+			glAttachShader(id, vertId);
+			glAttachShader(id, fragId);
+			if (hasGeoShader)
+			{
+				glShaderSource(geoId, 1, &geoSrcPtr, NULL);
+				glCompileShader(geoId);
+				glAttachShader(id, geoId);
+			}
+			glLinkProgram(id);
 			GLint linkSuccess;
-			glGetProgramiv(shaderProgram, GL_LINK_STATUS, &linkSuccess);
+			glGetProgramiv(id, GL_LINK_STATUS, &linkSuccess);
 			if (!linkSuccess)
 			{
 				GLchar infoLog[512];
-				glGetProgramInfoLog(shaderProgram, 512, NULL, infoLog);
+				glGetProgramInfoLog(id, 512, NULL, infoLog);
 				std::cout << vertPath << std::endl;
 				std::cout << "Shader program linking error: " << infoLog << std::endl;
 				
 			}
 			glDeleteShader(vertId);
 			glDeleteShader(fragId);
+			glDeleteShader(geoId);
 		}
 	}
 	Shader::~Shader()

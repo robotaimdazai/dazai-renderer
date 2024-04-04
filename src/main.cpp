@@ -100,7 +100,7 @@ int main()
 	//auto results = DazaiEngine::Gltfloader::load("models/csgo.glb");
 
 	//shaders
-	DazaiEngine::Shader shader("shaders/default.vert", "shaders/default.frag");
+	DazaiEngine::Shader shader("shaders/default.vert", "shaders/default.frag", "shaders/default.geom");
 	DazaiEngine::Shader lightShader("shaders/light.vert", "shaders/light.frag");
 	DazaiEngine::Shader outlineShader("shaders/outline.vert", "shaders/light.frag");
 	DazaiEngine::Shader frameBufferShader("shaders/framebuffer.vert", "shaders/framebuffer.frag");
