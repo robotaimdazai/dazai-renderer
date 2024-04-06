@@ -13,13 +13,13 @@ namespace DazaiEngine
 		vbo.bind();
 		glVertexAttribPointer(layout, numComponents, type, GL_FALSE, stride, offset);
 		glEnableVertexAttribArray(layout);
-		vbo.unBind();
+		vbo.unbind();
 	}
 	auto Vao::bind() -> void
 	{
 		glBindVertexArray(id);
 	}
-	auto Vao::unBind() -> void
+	auto Vao::unbind() -> void
 	{
 		glBindVertexArray(0);
 	}

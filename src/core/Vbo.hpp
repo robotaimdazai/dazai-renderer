@@ -15,9 +15,11 @@ namespace DazaiEngine
 	class Vbo
 	{
 		public:
-		Vbo(std::vector<Vertex> vertices);
+		Vbo() = delete;
+		Vbo(std::vector<Vertex>& vertices);
+		Vbo(std::vector<glm::mat4>& trsMatrices);
 		auto bind() -> void;
-		auto unBind() -> void;
+		auto unbind() -> void;
 		auto destroy() -> void;
 		unsigned int id = 0;
 	};

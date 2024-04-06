@@ -19,7 +19,7 @@ namespace DazaiEngine
             
                     if (!stream.is_open())
                     {
-                        std::cout << "Resources:: Can't open file" << std::endl;
+                        std::cout << "Resources:: Can't open file" << path << std::endl;
                     }
 
                     std::stringstream buffer;

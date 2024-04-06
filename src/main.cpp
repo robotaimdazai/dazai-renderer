@@ -101,6 +101,7 @@ int main()
 
 	//shaders
 	DazaiEngine::Shader shader("shaders/default.vert", "shaders/default.frag", "shaders/default.geom");
+	DazaiEngine::Shader instancedShader("shaders/defaultinstanced.vert", "shaders/default.frag", "shaders/default.geom");
 	DazaiEngine::Shader lightShader("shaders/light.vert", "shaders/light.frag");
 	DazaiEngine::Shader outlineShader("shaders/outline.vert", "shaders/light.frag");
 	DazaiEngine::Shader frameBufferShader("shaders/framebuffer.vert", "shaders/framebuffer.frag");
@@ -147,7 +148,58 @@ int main()
 	//meshes
 	DazaiEngine::Mesh light(lightVerts, lightInd);
 	//models
-	DazaiEngine::Model model("models/cs.glb", &shader);
+	//for instancing
+	// The number of asteroids to be created
+	const unsigned int number = 100;
+	// Radius of circle around which asteroids orbit
+	float radius = 10;
+	// How much ateroids deviate from the radius
+	float radiusDeviation = 0;
+	// Holds all transformations for the asteroids
+	std::vector <glm::mat4> instanceMatrix;
+	for (unsigned int i = 0; i < number; i++)
+	{
+		// Generates x and y for the function x^2 + y^2 = radius^2 which is a circle
+		float randf = -1.0f + (rand() / (RAND_MAX / 2.0f));
+		float x = randf;
+		float finalRadius = radius + randf * radiusDeviation;
+		float y = ((rand() % 2) * 2 - 1) * sqrt(1.0f - x * x);
+
+		// Holds transformations before multiplying them
+		glm::vec3 tempTranslation = {0,0,0};
+		glm::quat tempRotation = {0,0,0,0};
+		glm::vec3 tempScale = glm::vec3(1.0,1.0,1.0);
+
+		// Makes the random distribution more even
+		if (randf > 0.5f)
+		{
+			// Generates a translation near a circle of radius "radius"
+			tempTranslation = glm::vec3(y * finalRadius, randf, x * finalRadius);
+		}
+		else
+		{
+			// Generates a translation near a circle of radius "radius"
+			tempTranslation = glm::vec3(x * finalRadius, randf, y * finalRadius);
+		}
+		// Generates random rotations
+		//tempRotation = glm::quat(1.0f, randf, randf, randf);
+		// Generates random scales
+
+
+		// Initialize matrices
+		glm::mat4 trans = glm::mat4(1.0f);
+		glm::mat4 rot = glm::mat4(1.0f);
+		glm::mat4 sca = glm::mat4(1.0f);
+
+		// Transform the matrices to their correct form
+		trans = glm::translate(trans, tempTranslation);
+		rot = glm::mat4_cast(tempRotation);
+		sca = glm::scale(sca, tempScale);
+
+		// Push matrix transformation
+		instanceMatrix.push_back(trans * rot * sca);
+	}
+	DazaiEngine::Model model("models/cs.glb", &instancedShader, number, instanceMatrix);
 	model.transform.position = { 0,0,0 };
 	model.transform.rotation = { 0,0,0,0 };
 	//skybox

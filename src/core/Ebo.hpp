@@ -9,7 +9,7 @@ namespace DazaiEngine
 	public:
 		Ebo(std::vector<GLuint> indices);
 		auto bind() -> void;
-		auto unBind() -> void;
+		auto unbind() -> void;
 		auto destroy() -> void;
 		unsigned int id = 0;
 

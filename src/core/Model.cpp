@@ -3,12 +3,13 @@
 namespace DazaiEngine
 {
 	
-	Model::Model(const char* file, Shader* shader)
+	Model::Model(const char* file, Shader* shader, unsigned int instances, std::vector<glm::mat4> trsMatrices):
+		trsMatrices(trsMatrices)
 	{
 		auto result = Gltfloader::load(file);
 		for (size_t i = 0; i < result.meshes.size(); i++)
 		{
-			Mesh thisMesh(result.meshes[i].vertices, result.meshes[i].indices);
+			Mesh thisMesh(result.meshes[i].vertices, result.meshes[i].indices,instances, trsMatrices);
 			Material thisMaterial(shader,result.meshes[i].textures);
 			meshes.emplace_back(std::move(thisMesh));
 			materials.emplace_back(std::move(thisMaterial));

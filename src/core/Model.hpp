@@ -11,8 +11,8 @@ namespace DazaiEngine
 	class Model
 	{
 	public:
-		Model() = default;
-		Model(const char* file, Shader* shader);
+		Model() = delete;
+		Model(const char* file, Shader* shader, unsigned int instances = 1, std::vector<glm::mat4> trsMatrices = {});
 		Model(std::vector<Mesh>& meshes, std::vector<Material>& materials);
 		Model(Mesh& mesh,Material& material);
 		auto draw(Camera& camera, const Scene& scene)->void;
@@ -20,5 +20,6 @@ namespace DazaiEngine
 		std::vector<Mesh> meshes;
 		std::vector<Material> materials;
 		Transform transform;
+		std::vector<glm::mat4> trsMatrices;
 	};
 }

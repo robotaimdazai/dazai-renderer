@@ -12,7 +12,7 @@ namespace DazaiEngine
 	{
 		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, id);
 	}
-	auto Ebo::unBind() -> void
+	auto Ebo::unbind() -> void
 	{
 		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
 	}

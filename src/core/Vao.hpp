@@ -10,7 +10,7 @@ namespace DazaiEngine
 		Vao();
 		auto linkAttrib(Vbo& vbo, GLuint layout, GLuint numComponents, GLenum type, GLsizeiptr stride, void* offset) -> void;
 		auto bind() -> void;
-		auto unBind() -> void;
+		auto unbind() -> void;
 		auto destroy() -> void;
 		unsigned int id;
 		
