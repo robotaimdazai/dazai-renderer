@@ -39,7 +39,7 @@ namespace DazaiEngine
 				(
 					GL_TEXTURE_CUBE_MAP_POSITIVE_X + i,
 					0,
-					GL_RGB,
+					GL_SRGB,
 					width,
 					height,
 					0,

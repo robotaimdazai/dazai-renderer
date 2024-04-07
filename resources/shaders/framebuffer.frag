@@ -4,6 +4,7 @@ in vec2 texCoords;
 out vec4 FragColor;
 
 uniform sampler2D screenTexture;
+uniform float gamma = 2.2f;
 
 //for neighbor pixels
 const float offset_x = 1.0f / 800.0f;  
@@ -36,5 +37,6 @@ void main()
     FragColor = vec4(color,1.0f);
     */
 
-    FragColor = texture(screenTexture, texCoords);
+    vec4 fragment = texture(screenTexture, texCoords);
+    FragColor.rgb = pow(fragment.rgb, vec3(1.0f/gamma));
 }
