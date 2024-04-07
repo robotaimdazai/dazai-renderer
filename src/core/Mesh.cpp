@@ -43,7 +43,7 @@ namespace DazaiEngine
 		shader.setVec3(Scene::LIGHT_POS_UNIFORM, scene.lightPos);
 		for (size_t i = 0; i < textures.size(); i++)
 		{
-			textures[i].bindToSlot(shader, textures[i].texType, textures[i].slot);
+			textures[i].bindToSlot(shader, textures[i].texType);
 			textures[i].bind();
 		}
 		if (instances == 1)

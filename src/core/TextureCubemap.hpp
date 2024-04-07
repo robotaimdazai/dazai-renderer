@@ -2,6 +2,7 @@
 #include<glad/glad.h>
 #include <iostream>
 #include "../util/Resources.hpp"
+#include "Shader.hpp"
 
 namespace DazaiEngine
 {
@@ -19,6 +20,7 @@ namespace DazaiEngine
 			const std::string& back
 		);
 		auto bind() -> void;
+		auto bindToSlot(Shader& shader, const char* uniform) -> void;
 		auto unbind() -> void;
 
 		 int width;

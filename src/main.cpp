@@ -106,10 +106,6 @@ int main()
 	DazaiEngine::Shader outlineShader("shaders/outline.vert", "shaders/light.frag");
 	DazaiEngine::Shader frameBufferShader("shaders/framebuffer.vert", "shaders/framebuffer.frag");
 	DazaiEngine::Shader skyboxShader("shaders/skybox.vert", "shaders/skybox.frag");
-	frameBufferShader.bind();
-	frameBufferShader.setInt("screenTexture",0);
-	skyboxShader.bind();
-	skyboxShader.setInt("skybox", 0);
 	//camera
 	DazaiEngine::Camera camera(width, height, glm::vec3(0.0f, 0.0f, 2.0f));
 	//textures
@@ -127,6 +123,7 @@ int main()
 		"textures/front.jpg",
 		"textures/back.jpg"
 	);
+	skyboxTex.bindToSlot(skyboxShader,"skybox");
 	//data
 	//floor
 	std::vector<DazaiEngine::Vertex> vert(vertices, vertices + sizeof(vertices) / sizeof(DazaiEngine::Vertex));
@@ -208,7 +205,9 @@ int main()
 	// -------------------------------------------------------------------------------
 	//framebuffer
 	DazaiEngine::FrameBuffer fb;
-	DazaiEngine::FrameBufferTexture2d fbTex(width,height,0);
+	fb.createVaoVbo();
+	DazaiEngine::FrameBufferTexture2d fbTex(width,height,GL_COLOR_ATTACHMENT0,GL_RGB32F,GL_RGB, GL_UNSIGNED_BYTE,0);
+	fbTex.bindToSlot(frameBufferShader,"screenTexture");
 	DazaiEngine::RenderBuffer rb(width,height);
 	fb.unbind();
 	//core loop
@@ -235,11 +234,11 @@ int main()
 		glDisable(GL_DEPTH_TEST);
 		//outlineShader.bind();
 		//outlineShader.setFloat("outlining", 0.02f);
-		model.draw(camera, scene, outlineMaterial);
+		//model.draw(camera, scene, outlineMaterial);
 		glStencilFunc(GL_ALWAYS, 0, 0xff);
 		glEnable(GL_DEPTH_TEST);
 		//draw skybox
-		//skybox.draw(skyboxShader, skyboxTex, camera);
+		skybox.draw(skyboxShader, skyboxTex, camera);
 
 		light.draw(lightShader, tex,camera,scene, lightTransform.position,lightTransform.rotation,lightTransform.scale);
 		fb.unbind();

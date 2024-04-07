@@ -1,4 +1,7 @@
 #include "FrameBuffer.hpp"
+#include "FrameBuffer.hpp"
+#include "FrameBuffer.hpp"
+#include "FrameBuffer.hpp"
 
 namespace DazaiEngine
 {
@@ -16,6 +19,11 @@ namespace DazaiEngine
 
 	FrameBuffer::FrameBuffer()
 	{
+		glGenFramebuffers(1, &id);
+		glBindFramebuffer(GL_FRAMEBUFFER, id);
+	}
+	auto FrameBuffer::createVaoVbo() -> void
+	{
 		glGenVertexArrays(1, &vao);
 		glGenBuffers(1, &vbo);
 		glBindVertexArray(vao);
@@ -26,10 +34,6 @@ namespace DazaiEngine
 		glEnableVertexAttribArray(1);
 		glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 4 * sizeof(float), (void*)(2 * sizeof(float)));
 		glBindBuffer(GL_ARRAY_BUFFER, 0);
-
-		glGenFramebuffers(1, &id);
-		glBindFramebuffer(GL_FRAMEBUFFER, id);
-		
 	}
 	auto FrameBuffer::bind() -> void
 	{
@@ -46,5 +50,13 @@ namespace DazaiEngine
 	auto FrameBuffer::unbindVao() -> void
 	{
 		glBindVertexArray(0);
+	}
+	auto FrameBuffer::setDrawBuffer(GLenum drawBuffer) -> void
+	{
+		glDrawBuffer(drawBuffer);
+	}
+	auto DazaiEngine::FrameBuffer::setReadBuffer(GLenum readBuffer) -> void
+	{
+		glReadBuffer(readBuffer);
 	}
 }

@@ -1,4 +1,5 @@
 #include "TextureCubemap.hpp"
+#include "TextureCubemap.hpp"
 
 namespace DazaiEngine
 {
@@ -60,6 +61,11 @@ namespace DazaiEngine
 	{
 		glActiveTexture(GL_TEXTURE0);
 		glBindTexture(GL_TEXTURE_CUBE_MAP, id);
+	}
+	auto TextureCubemap::bindToSlot(Shader& shader, const char* uniform) -> void
+	{
+		shader.bind();
+		shader.setInt(uniform, GL_TEXTURE0);
 	}
 	auto TextureCubemap::unbind() -> void
 	{

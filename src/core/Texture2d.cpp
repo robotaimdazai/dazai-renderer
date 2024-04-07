@@ -31,16 +31,16 @@ namespace DazaiEngine
 		glBindTexture(GL_TEXTURE_2D, id);
 		glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
 		//parameters
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST_MIPMAP_LINEAR);
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
 		glTexImage2D(GL_TEXTURE_2D, 0, GL_SRGB_ALPHA, width, height, 0, format, pixelType, bytes);
 		//mipmaps
-		//glGenerateMipmap(GL_TEXTURE_2D);
+		glGenerateMipmap(GL_TEXTURE_2D);
 		glBindTexture(GL_TEXTURE_2D, 0);
 	}
-	auto Texture2d::bindToSlot(Shader& shader, const char* uniform, unsigned int slot) -> void
+	auto Texture2d::bindToSlot(Shader& shader, const char* uniform) -> void
 	{
 		shader.bind();
 		shader.setInt(uniform, GL_TEXTURE0 + slot);
