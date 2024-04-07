@@ -199,7 +199,7 @@ int main()
 		// Push matrix transformation
 		instanceMatrix.push_back(trans * rot * sca);
 	}
-	DazaiEngine::Model model("models/cs.glb", &instancedShader, number, instanceMatrix);
+	DazaiEngine::Model model("models/cs.glb", &shader);
 	model.transform.position = { 0,0,0 };
 	model.transform.rotation = { 0,0,0,0 };
 	//skybox
@@ -233,15 +233,15 @@ int main()
 		model.draw(camera,scene);
 		glStencilFunc(GL_NOTEQUAL,1, 0xff);
 		glDisable(GL_DEPTH_TEST);
-		outlineShader.bind();
-		outlineShader.setFloat("outlining", 0.02f);
+		//outlineShader.bind();
+		//outlineShader.setFloat("outlining", 0.02f);
 		model.draw(camera, scene, outlineMaterial);
 		glStencilFunc(GL_ALWAYS, 0, 0xff);
 		glEnable(GL_DEPTH_TEST);
 		//draw skybox
-		skybox.draw(skyboxShader, skyboxTex, camera);
+		//skybox.draw(skyboxShader, skyboxTex, camera);
 
-		//light.draw(lightShader, tex,camera,scene, lightTransform.position,lightTransform.rotation,lightTransform.scale);
+		light.draw(lightShader, tex,camera,scene, lightTransform.position,lightTransform.rotation,lightTransform.scale);
 		fb.unbind();
 		frameBufferShader.bind();
 		fb.bindVao();
