@@ -55,7 +55,7 @@ namespace DazaiEngine
 	{
 		glDrawBuffer(drawBuffer);
 	}
-	auto DazaiEngine::FrameBuffer::setReadBuffer(GLenum readBuffer) -> void
+	auto FrameBuffer::setReadBuffer(GLenum readBuffer) -> void
 	{
 		glReadBuffer(readBuffer);
 	}

@@ -43,4 +43,13 @@ namespace DazaiEngine
 		}
 	}
 
+	auto Model::draw(Camera& camera, Shader& shader, Scene& scene) -> void
+	{
+		for (size_t i = 0; i < meshes.size(); i++)
+		{
+			meshes[i].draw(shader, materials[i].textures, camera, scene,
+				transform.position, transform.rotation, transform.scale);
+		}
+	}
+
 }

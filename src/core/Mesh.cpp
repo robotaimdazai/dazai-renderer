@@ -41,10 +41,11 @@ namespace DazaiEngine
 		camera.bindtoShader(shader, "camMatrix");
 		shader.setVec4(Scene::LIGHT_COLOR_UNIFORM, scene.lightColor);
 		shader.setVec3(Scene::LIGHT_POS_UNIFORM, scene.lightPos);
+		shader.setMat4(Scene::LIGHT_PROJECTION_UNIFORM, scene.lightProjection);
 		for (size_t i = 0; i < textures.size(); i++)
 		{
-			textures[i].bindToSlot(shader, textures[i].texType);
 			textures[i].bind();
+			textures[i].bindToSlot(shader, textures[i].texType);
 		}
 		if (instances == 1)
 		{
