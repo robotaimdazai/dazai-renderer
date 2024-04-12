@@ -22,6 +22,8 @@ namespace DazaiEngine
 	private:
 		auto static getImageFormat(const tinygltf::Image& image)->GLenum;
 		auto static getImageType(const tinygltf::Image& image)->GLenum;
+		auto static calculateTangent(const Vertex& v0, const Vertex& v1, const Vertex& v2)->glm::vec3;
+		auto static calculateTangents(std::vector<Vertex>& vertices, const std::vector<GLuint>& indices) ->void;
 
 	};
 }

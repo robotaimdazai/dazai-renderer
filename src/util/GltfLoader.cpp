@@ -126,6 +126,8 @@ namespace DazaiEngine
 					vertex.color = { 1.0f,1.0f,1.0f };
 					thisMesh.vertices.push_back(vertex);
 				}
+				//TANGENTS for normal mapping
+				calculateTangents(thisMesh.vertices, thisMesh.indices);
 				//TEXTURES
 				//---------
 				int materialIndex = primitive.material;
@@ -136,6 +138,7 @@ namespace DazaiEngine
 					thisMesh.name = material.name; // setting mesh name to material name for id for now
 					int baseImageIndex = material.pbrMetallicRoughness.baseColorTexture.index;
 					int specularImageIndex = material.pbrMetallicRoughness.metallicRoughnessTexture.index;
+					int normalImageIndex = material.normalTexture.index;
 					//baseColorTex
 					if (baseImageIndex != -1)
 					{
@@ -143,6 +146,14 @@ namespace DazaiEngine
 						Texture2d baseColorTex(&baseColor.image.at(0), baseColor.width, baseColor.height, baseColor.component,
 							"diffuse0", 0, Gltfloader::getImageFormat(baseColor), Gltfloader::getImageType(baseColor));
 						thisMesh.textures.emplace_back(std::move(baseColorTex));
+					}
+					//normal maps
+					if (normalImageIndex != -1)
+					{
+						auto normalImage = model.images[normalImageIndex];
+						Texture2d normalTexture(&normalImage.image.at(0), normalImage.width, normalImage.height, 3,
+							"normal0", 2, GL_RGB, Gltfloader::getImageType(normalImage));
+						thisMesh.textures.emplace_back(std::move(normalTexture));
 					}
 				}
 				//push to results
@@ -184,6 +195,46 @@ namespace DazaiEngine
 			type = GL_UNSIGNED_SHORT;
 		}
 		return type;
+	}
+
+	auto Gltfloader::calculateTangent(const Vertex& v0, const Vertex& v1, const Vertex& v2) -> glm::vec3
+	{
+		glm::vec3 edge1 = v1.position - v0.position;
+		glm::vec3 edge2 = v2.position - v0.position;
+
+		glm::vec2 deltaUV1 = v1.uv - v0.uv;
+		glm::vec2 deltaUV2 = v2.uv - v0.uv;
+
+		float f = 1.0f / (deltaUV1.x * deltaUV2.y - deltaUV2.x * deltaUV1.y);
+
+		glm::vec3 tangent;
+		tangent.x = f * (deltaUV2.y * edge1.x - deltaUV1.y * edge2.x);
+		tangent.y = f * (deltaUV2.y * edge1.y - deltaUV1.y * edge2.y);
+		tangent.z = f * (deltaUV2.y * edge1.z - deltaUV1.y * edge2.z);
+		return tangent;
+	}
+
+	auto Gltfloader::calculateTangents(std::vector<Vertex>& vertices, const std::vector<GLuint>& indices) -> void
+	{
+		for (size_t i = 0; i < indices.size(); i += 3)
+		{
+			Vertex& v0 = vertices[indices[i]];
+			Vertex& v1 = vertices[indices[i + 1]];
+			Vertex& v2 = vertices[indices[i + 2]];
+
+			glm::vec3 tangent = calculateTangent(v0, v1, v2);
+
+			// Accumulate tangent to vertices
+			v0.tangent += tangent;
+			v1.tangent += tangent;
+			v2.tangent += tangent;
+		}
+
+		// Orthonormalize and normalize tangents
+		for (auto& vertex : vertices)
+		{
+			vertex.tangent = glm::normalize(vertex.tangent - vertex.normal * glm::dot(vertex.normal, vertex.tangent));
+		}
 	}
 
 }

@@ -14,6 +14,7 @@ namespace DazaiEngine
 		vao.linkAttrib(vbo, 1, 2, GL_FLOAT, sizeof(Vertex), (void*)(3 * sizeof(float)));
 		vao.linkAttrib(vbo, 2, 3, GL_FLOAT, sizeof(Vertex), (void*)(5 * sizeof(float)));
 		vao.linkAttrib(vbo, 3, 3, GL_FLOAT, sizeof(Vertex), (void*)(8 * sizeof(float)));
+		vao.linkAttrib(vbo, 4, 3, GL_FLOAT, sizeof(Vertex), (void*)(12 * sizeof(float)));
 		if (instances != 1)
 		{
 			instanceVbo.bind();
@@ -41,7 +42,7 @@ namespace DazaiEngine
 		camera.bindtoShader(shader, "camMatrix");
 		shader.setVec4(Scene::LIGHT_COLOR_UNIFORM, scene.lightColor);
 		shader.setVec3(Scene::LIGHT_POS_UNIFORM, scene.lightPos);
-		shader.setMat4(Scene::LIGHT_PROJECTION_UNIFORM, scene.lightProjection);
+		//shader.setMat4(Scene::LIGHT_PROJECTION_UNIFORM, scene.lightProjection);
 		for (size_t i = 0; i < textures.size(); i++)
 		{
 			textures[i].bind();
@@ -49,15 +50,12 @@ namespace DazaiEngine
 		}
 		if (instances == 1)
 		{
-			glm::mat4 trans = glm::mat4(1.0f);
-			glm::mat4 rot = glm::mat4(1.0f);
-			glm::mat4 sca = glm::mat4(1.0f);
-			trans = glm::translate(trans, position);
-			rot = glm::mat4_cast(rotation);
-			sca = glm::scale(sca, scale);
-			shader.setMat4("translation", trans);
-			shader.setMat4("rotation", rot);
-			shader.setMat4("scale", sca);
+			auto model = glm::mat4(1.0f);
+			model = glm::translate(model, position);
+			auto rot = glm::mat4_cast(rotation);
+			model *= rot;
+			model = glm::scale(model, scale);
+			shader.setMat4("model", model);
 			glDrawElements(GL_TRIANGLES, indices.size(), GL_UNSIGNED_INT, 0);
 		}
 		else

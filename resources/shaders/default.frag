@@ -6,24 +6,30 @@ in vec3 currentPos;
 in vec2 texCoord;
 in vec3 normal;
 in vec3 color;
+in vec3 camPos;
 in vec4 fragPosLight;
-
-uniform sampler2D diffuse0;
-uniform sampler2D specular0;
-uniform sampler2D shadowMap;
+in vec3 vLightPos;
+in vec3 tbnCamPos;
+in vec3 tbnLightPos;
+in vec3 tbnFragPos;
+								//slots
+uniform sampler2D diffuse0;		//0
+uniform sampler2D specular0;	//1
+uniform sampler2D normal0;		//2
+uniform sampler2D shadowMap;	//na
 
 uniform vec4 lightColor;
-uniform vec3 lightPos;
-uniform vec3 camPos;
-uniform float ambient = 0.1f;
+uniform float ambient = 0.3f;
 uniform float specularLight =0.6f;
 uniform float specPower = 16;
 uniform int blinnPhong = 1;
+uniform int shadowMapping =	0;
+uniform int useNormalMap = 1;
 
 
 vec4 pointLight()
 {
-	vec3 ligtVec = lightPos - currentPos;
+	vec3 ligtVec = vLightPos - currentPos;
 	float d = length(ligtVec);
 	float a = 3.0;
 	float b = 0.7;
@@ -52,13 +58,23 @@ vec4 pointLight()
 
 vec4 directionalLight()
 {
-	vec3 lightDirection = normalize(lightPos);
+	vec3 lightDirection = normalize(vLightPos);
 	vec3 normalizedNormal = normalize(normal);
+	if(useNormalMap == 1)
+	{
+		vec3 normalMap = texture(normal0, texCoord).rgb;
+		normalizedNormal = normalize(normalMap * 2.0 - 1.0);
+		lightDirection = normalize(tbnFragPos - lightDirection);
+	}
 	float diffuse = max(dot(normalizedNormal,lightDirection),0.0f);
 	float specular = 0.0f;
 	if(diffuse!=0.0f)
 	{
 		vec3 viewDirection = normalize(camPos - currentPos);
+		if(useNormalMap == 1)
+		{
+			viewDirection= normalize(tbnCamPos - tbnFragPos);
+		}
 		vec3 reflectionDirection = reflect(-lightDirection,normalizedNormal);
 		vec3 halfwayVec = normalize(viewDirection + lightDirection);
 		if(blinnPhong ==1)
@@ -76,8 +92,8 @@ vec4 directionalLight()
 		lightCooords = (lightCooords + 1.0f)/2.0f; // change it to 0-1 range as depth buffer is in same range
 		float shadowMapDepth = texture(shadowMap, lightCooords.xy).r;
 		float currentDepth = lightCooords.z;
-		float bias = 0.000f;
-		if(currentDepth > shadowMapDepth + bias)
+		float bias = 0.005f;
+		if(currentDepth > shadowMapDepth + bias && shadowMapping == 1)
 		{
 			shadow = 1.0f;
 		}
@@ -89,7 +105,7 @@ vec4 directionalLight()
 
 vec4 directionalLightWithAlpha()
 {
-	vec3 lightDirection = normalize(lightPos);
+	vec3 lightDirection = normalize(vLightPos);
 	vec3 normalizedNormal = normalize(normal);
 	float diffuse = max(dot(normalizedNormal,lightDirection),0.0f);
 	float specular = 0.0f;
@@ -118,7 +134,7 @@ vec4 spotLight()
 {
 	float outerCone = 0.2f;
 	float innerCone = 0.3f;
-	vec3 ligtVec = lightPos - currentPos;
+	vec3 ligtVec = vLightPos - currentPos;
 	vec3 lightDirection = normalize(ligtVec);
 	vec3 normalizedNormal = normalize(normal);
 	float diffuse = max(dot(normalizedNormal,lightDirection),0.0f);

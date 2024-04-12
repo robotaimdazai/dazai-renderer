@@ -106,7 +106,6 @@ int main()
 	DazaiEngine::Shader outlineShader("shaders/outline.vert", "shaders/light.frag");
 	DazaiEngine::Shader frameBufferShader("shaders/framebuffer.vert", "shaders/framebuffer.frag");
 	DazaiEngine::Shader skyboxShader("shaders/skybox.vert", "shaders/skybox.frag");
-	DazaiEngine::Shader shadowmapShader("shaders/shadowmap.vert", "shaders/shadowmap.frag");
 	//camera
 	DazaiEngine::Camera camera(width, height, glm::vec3(0.0f, 0.0f, 2.0f));
 	//textures
@@ -137,7 +136,7 @@ int main()
 	//create scene
 	DazaiEngine::Scene scene;
 	DazaiEngine::Transform lightTransform;
-	lightTransform.position = { 0.5,0.5f,0.5f };
+	lightTransform.position = { 0.5,0.5f,1.5f };
 	scene.lightColor = { 1.0f,1.0f,1.0f,1.0f };
 	scene.lightPos = lightTransform.position;
 
@@ -214,33 +213,14 @@ int main()
 	fb.unbind();
 
 	// shadowMap Framebuffer
-	DazaiEngine::FrameBuffer smfb;
-	DazaiEngine::FrameBufferTexture2d smTex(2048, 2048, GL_DEPTH_ATTACHMENT, GL_DEPTH_COMPONENT,
-		GL_DEPTH_COMPONENT, GL_FLOAT, 2);
-	smfb.setDrawBuffer(GL_NONE);
-	smfb.setReadBuffer(GL_NONE);
-	smfb.unbind();
-	//light perspective for shadows
-	glm::mat4 lightProj = glm::ortho(-35.0f, 35.0f, -35.0f, 35.0f, 0.1f, 100.0f);
-	glm::mat4 lightView = glm::lookAt(  20.0f * scene.lightPos, glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, 1.0f, 0.0f));
-	scene.lightProjection = lightProj * lightView;
-	shadowmapShader.bind();
-	shadowmapShader.setMat4(scene.LIGHT_PROJECTION_UNIFORM, scene.lightProjection);
-	//core loop
+	
 	while (!glfwWindowShouldClose(window)) {
 		//timer
 		DazaiEngine::Time::updateDeltaTime();
 		std::string windowText = "FPS: " + std::to_string(DazaiEngine::Time::fps())+ 
 			" MS: " + std::to_string(DazaiEngine::Time::deltaTime * 1000.0f);
 		glfwSetWindowTitle(window, windowText.c_str());
-		//shadowmaps
-		glEnable(GL_DEPTH_TEST);
-		glViewport(0, 0, 2048, 2048);
-		smfb.bind();
-		glClear(GL_DEPTH_BUFFER_BIT);
-		model.draw(camera, shadowmapShader,scene);
-		smfb.unbind(); // at this stage depth buffer will contain depth data for drawn model
-		glViewport(0, 0, width, height);
+		
 		//framebuffer
 		fb.bind();
 		glClearColor(0.1f, 0.1f, 0.1f, 1.0f);
@@ -252,9 +232,6 @@ int main()
 		camera.updateMatrix(45.0f,0.1f,100.0f);
 		//render
 		glStencilFunc(GL_ALWAYS, 1, 0xff);
-		//set shadowmapTexure
-		smTex.bind();
-		smTex.bindToSlot(shader, scene.SHADOW_MAP_UNIFORM);
 		model.draw(camera,scene);
 		glStencilFunc(GL_NOTEQUAL,1, 0xff);
 		glDisable(GL_DEPTH_TEST);

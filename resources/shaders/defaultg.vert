@@ -14,6 +14,7 @@ out DATA
 	mat4 lightProjection;
 }data_out;
 
+
 uniform mat4 camMatrix;
 uniform mat4 translation;
 uniform mat4 rotation;
