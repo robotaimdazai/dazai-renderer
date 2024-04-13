@@ -241,7 +241,7 @@ namespace DazaiEngine
 		// Orthonormalize and normalize tangents
 		for (auto& vertex : vertices)
 		{
-			vertex.tangent = glm::normalize(vertex.tangent - vertex.normal * glm::dot(vertex.normal, vertex.tangent));
+			vertex.tangent = glm::normalize(vertex.normal);
 		}
 	}
 
