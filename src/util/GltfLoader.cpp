@@ -139,6 +139,7 @@ namespace DazaiEngine
 					int baseImageIndex = material.pbrMetallicRoughness.baseColorTexture.index;
 					int specularImageIndex = material.pbrMetallicRoughness.metallicRoughnessTexture.index;
 					int normalImageIndex = material.normalTexture.index;
+					int aoIndex = material.occlusionTexture.index;
 					//baseColorTex
 					if (baseImageIndex != -1)
 					{
@@ -154,6 +155,13 @@ namespace DazaiEngine
 						Texture2d normalTexture(&normalImage.image.at(0), normalImage.width, normalImage.height, 3,
 							"normal0", 2, GL_RGB, Gltfloader::getImageType(normalImage));
 						thisMesh.textures.emplace_back(std::move(normalTexture));
+					}
+					if (aoIndex != -1)
+					{
+						auto aoImage = model.images[aoIndex];
+						Texture2d aoTexture(&aoImage.image.at(0), aoImage.width, aoImage.height, aoImage.component,
+							"ao0", 3, Gltfloader::getImageFormat(aoImage), Gltfloader::getImageType(aoImage));
+						thisMesh.textures.emplace_back(std::move(aoTexture));
 					}
 				}
 				//push to results

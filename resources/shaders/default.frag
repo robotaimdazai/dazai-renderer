@@ -16,6 +16,7 @@ in vec3 tbnFragPos;
 uniform sampler2D diffuse0;		//0
 uniform sampler2D specular0;	//1
 uniform sampler2D normal0;		//2
+uniform sampler2D ao0;			//3
 uniform sampler2D shadowMap;	//na
 
 uniform vec4 lightColor;
@@ -25,6 +26,7 @@ uniform float specPower = 16;
 uniform int blinnPhong = 1;
 uniform int shadowMapping =	0;
 uniform int useNormalMap = 1;
+uniform int useAmbientOcclusion = 1;
 
 
 vec4 pointLight()
@@ -98,9 +100,28 @@ vec4 directionalLight()
 			shadow = 1.0f;
 		}
 	}
+
+	float ao = 1;
+	if(useAmbientOcclusion==1)
+	{
+		ao = texture(ao0, texCoord).r; // Assuming AO map is greyscale
+	}
 	//final
-	return (texture(diffuse0, texCoord) * (diffuse *(1.0f-shadow) + ambient) + 
-			texture(specular0, texCoord).r * specular * (1.0f - shadow)) * lightColor;
+	vec4 diffuseColor = texture(diffuse0, texCoord);
+	float specularIntensity = texture(specular0, texCoord).r;
+
+	// Calculate diffuse and ambient contributions
+	vec3 diffuseComponent = diffuseColor.rgb * diffuse * (1.0f - shadow) * ao;
+	vec3 ambientComponent = diffuseColor.rgb * ambient * ao; // Assuming ambient uses the same texture
+
+	// Calculate specular contribution
+	vec3 specularComponent = vec3(specularIntensity) * specular * (1.0f - shadow);
+
+	// Combine all lighting components
+	vec3 finalColor = (diffuseComponent + ambientComponent + specularComponent) * lightColor.rgb;
+
+	// Return the final color with full opacity
+	return vec4(finalColor, 1.0);
 }
 
 vec4 directionalLightWithAlpha()
