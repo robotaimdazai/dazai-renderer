@@ -5,10 +5,12 @@ out vec4 FragColor;
 
 uniform sampler2D screenTexture;
 uniform float gamma = 2.2f;
+uniform int useHdr =1;
+uniform float exposure =2f;
 
 //for neighbor pixels
 const float offset_x = 1.0f / 800.0f;  
-const float offset_y = 1.0f / 600.0f;  
+const float offset_y = 1.0f / 800.0f;  
 
 vec2 offsets[9] = vec2[]
 (
@@ -37,6 +39,10 @@ void main()
     FragColor = vec4(color,1.0f);
     */
 
-    vec4 fragment = texture(screenTexture, texCoords);
-    FragColor.rgb = pow(fragment.rgb, vec3(1.0f/gamma));
+    vec3 fragment = texture(screenTexture, texCoords).rgb;
+    if(useHdr == 1)
+	{
+		fragment = vec3(1.0f) - exp(-fragment * exposure); //tonemapped
+	}
+    FragColor.rgb = pow(fragment, vec3(1.0f/gamma));
 }
