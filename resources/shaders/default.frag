@@ -27,7 +27,8 @@ uniform int blinnPhong = 1;
 uniform int shadowMapping =	0;
 uniform int useNormalMap = 1;
 uniform int useAmbientOcclusion = 1;
-uniform float directionalIntensity = 1.5;
+uniform int useHdr = 0;
+uniform float exposure =3f;
 
 
 vec4 pointLight()
@@ -64,8 +65,6 @@ vec4 pointLight()
 		specular = specAmount * specularLight;
 	}
 
-
-
 	float ao = 1;
 	if(useAmbientOcclusion==1)
 	{
@@ -82,6 +81,10 @@ vec4 pointLight()
 	vec3 specularComponent = vec3(specularIntensity) * specular * attenuation;
 	// Combine all lighting components
 	vec3 finalColor = (diffuseComponent + ambientComponent + specularComponent) * lightColor.rgb;
+	if(useHdr == 1)
+	{
+		finalColor = vec3(1.0f) - exp(-finalColor * exposure); //tonemapped
+	}
 	// Return the final color with full opacity
 	return vec4(finalColor, 1.0);
 	
@@ -145,11 +148,16 @@ vec4 directionalLight()
 	vec3 ambientComponent = diffuseColor.rgb * ambient * ao; // Assuming ambient uses the same texture
 
 	// Calculate specular contribution
-	vec3 specularComponent = vec3(specularIntensity) * specular * (1.0f - shadow);
+	vec3 specularComponent = vec3(specularIntensity) * specular * (1.0f - shadow) * ao;
 
 	// Combine all lighting components
 	vec3 finalColor = (diffuseComponent + ambientComponent + specularComponent) * 
-						lightColor.rgb * directionalIntensity;
+						lightColor.rgb;
+
+	if(useHdr == 1)
+	{
+		finalColor = vec3(1.0f) - exp(-finalColor * exposure); //tonemapped
+	}
 
 	// Return the final color with full opacity
 	return vec4(finalColor, 1.0);
@@ -211,7 +219,10 @@ vec4 spotLight()
 
 	// Combine all lighting components
 	vec3 finalColor = (diffuseComponent + ambientComponent + specularComponent) * lightColor.rgb;
-
+	if(useHdr == 1)
+	{
+		finalColor = vec3(1.0f) - exp(-finalColor * exposure); //tonemapped
+	}
 	// Return the final color with full opacity
 	return vec4(finalColor, 1.0);
 	
