@@ -33,7 +33,7 @@ namespace DazaiEngine
 		glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 4 * sizeof(float), (void*)0);
 		glEnableVertexAttribArray(1);
 		glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 4 * sizeof(float), (void*)(2 * sizeof(float)));
-		glBindBuffer(GL_ARRAY_BUFFER, 0);
+		glBindVertexArray(0);
 	}
 	auto FrameBuffer::bind() -> void
 	{
@@ -51,12 +51,12 @@ namespace DazaiEngine
 	{
 		glBindVertexArray(0);
 	}
-	auto FrameBuffer::setDrawBuffer(GLenum drawBuffer) -> void
+	auto FrameBuffer::setDrawBuffer(const unsigned int count, GLenum drawBuffers[]) -> void
 	{
-		glDrawBuffer(drawBuffer);
+		glDrawBuffers(count,drawBuffers);
 	}
-	auto FrameBuffer::setReadBuffer(GLenum readBuffer) -> void
+	auto FrameBuffer::setReadBuffer(GLenum readBuffers) -> void
 	{
-		glReadBuffer(readBuffer);
+		glReadBuffer(readBuffers);
 	}
 }

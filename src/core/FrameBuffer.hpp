@@ -15,8 +15,8 @@ namespace DazaiEngine
 		auto unbind() -> void;
 		auto bindVao() -> void;
 		auto unbindVao() -> void;
-		auto setDrawBuffer(GLenum drawBuffer) -> void;
-		auto setReadBuffer(GLenum readBuffer) -> void;
+		auto setDrawBuffer(const unsigned int count,GLenum drawBuffers[]) -> void;
+		auto setReadBuffer(GLenum readBuffers) -> void;
 		unsigned int id;
 		unsigned int vao;
 		unsigned int vbo;

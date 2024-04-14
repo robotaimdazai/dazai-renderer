@@ -45,8 +45,8 @@ namespace DazaiEngine
 		//shader.setMat4(Scene::LIGHT_PROJECTION_UNIFORM, scene.lightProjection);
 		for (size_t i = 0; i < textures.size(); i++)
 		{
-			textures[i].bind();
 			textures[i].bindToSlot(shader, textures[i].texType);
+			textures[i].bind();
 		}
 		if (instances == 1)
 		{
@@ -62,6 +62,12 @@ namespace DazaiEngine
 		{
 			glDrawElementsInstanced(GL_TRIANGLES, indices.size(), GL_UNSIGNED_INT, 0,instances);
 		}
+
+		for (size_t i = 0; i < textures.size(); i++)
+		{
+			textures[i].unbind();
+		}
+	
 		
 	}
 }

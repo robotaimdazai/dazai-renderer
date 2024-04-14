@@ -9,14 +9,12 @@ namespace DazaiEngine
 	public:
 		FrameBufferTexture2d() = delete;
 		FrameBufferTexture2d(unsigned int width, unsigned int height, GLenum attachment,
-			GLenum internalFormat, GLenum format, GLenum datatype, unsigned int slot);
+			GLenum internalFormat, GLenum format, GLenum datatype, bool clampColorToEdge = false);
 		auto bind() -> void;
-		auto bindToSlot(Shader& shader, const char* uniform) -> void;
 		auto unbind() -> void;
 		unsigned int id;
 		GLenum attachment;
 		unsigned int width;
 		unsigned int height;
-		unsigned int slot;
 	};
 }

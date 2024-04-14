@@ -105,15 +105,17 @@ int main()
 	DazaiEngine::Shader lightShader("shaders/light.vert", "shaders/light.frag");
 	DazaiEngine::Shader outlineShader("shaders/outline.vert", "shaders/light.frag");
 	DazaiEngine::Shader frameBufferShader("shaders/framebuffer.vert", "shaders/framebuffer.frag");
+	DazaiEngine::Shader blurShader("shaders/framebuffer.vert", "shaders/blur.frag");
 	DazaiEngine::Shader skyboxShader("shaders/skybox.vert", "shaders/skybox.frag");
+
+	frameBufferShader.bind();
+	frameBufferShader.setInt("screenTexture", 0);
+	frameBufferShader.setInt("bloomTexture", 1);
+	blurShader.bind();
+	blurShader.setInt("screenTexture", 0);
+
 	//camera
 	DazaiEngine::Camera camera(width, height, glm::vec3(0.0f, 0.0f, 2.0f));
-	//textures
-	DazaiEngine::Texture2d textures[]
-	{
-		DazaiEngine::Texture2d("textures/planks.png","diffuse0", 0, GL_RGBA, GL_UNSIGNED_BYTE),
-		DazaiEngine::Texture2d("textures/planksSpec.png","specular0", 1, GL_RED, GL_UNSIGNED_BYTE)
-	};
 	DazaiEngine::TextureCubemap skyboxTex
 	(
 		"textures/right.jpg",
@@ -123,12 +125,9 @@ int main()
 		"textures/front.jpg",
 		"textures/back.jpg"
 	);
-	skyboxTex.bindToSlot(skyboxShader,"skybox");
+	skyboxShader.bind();
+	skyboxShader.setInt("skybox", 0);
 	//data
-	//floor
-	std::vector<DazaiEngine::Vertex> vert(vertices, vertices + sizeof(vertices) / sizeof(DazaiEngine::Vertex));
-	std::vector<GLuint> ind(indices, indices + sizeof(indices) / sizeof(GLuint));
-	std::vector<DazaiEngine::Texture2d> tex(textures, textures + sizeof(textures) / sizeof(DazaiEngine::Texture2d));
 	//light
 	std::vector<DazaiEngine::Vertex> lightVerts(lightVertices, lightVertices + sizeof(lightVertices) / sizeof(DazaiEngine::Vertex));
 	std::vector<GLuint> lightInd(lightIndices, lightIndices + sizeof(lightIndices) / sizeof(GLuint));
@@ -140,8 +139,6 @@ int main()
 	scene.lightColor = { 1.0f,1.0f,1.0f,1.0f };
 	scene.lightPos = lightTransform.position;
 
-	DazaiEngine::Material lightMat(&lightShader, tex);
-	DazaiEngine::Material outlineMaterial(&outlineShader, tex);
 	//meshes
 	DazaiEngine::Mesh light(lightVerts, lightInd);
 	//models
@@ -205,15 +202,28 @@ int main()
 	// -------------------------------------------------------------------------------
 	
 	//framebuffer
-	DazaiEngine::FrameBuffer fb;
-	fb.createVaoVbo();
-	DazaiEngine::FrameBufferTexture2d fbTex(width,height,GL_COLOR_ATTACHMENT0,GL_RGB16F,GL_RGB, GL_UNSIGNED_BYTE,0);
-	fbTex.bindToSlot(frameBufferShader,"screenTexture");
-	DazaiEngine::RenderBuffer rb(width,height);
-	fb.unbind();
+	DazaiEngine::FrameBuffer mainFrameBuffer;
+	mainFrameBuffer.createVaoVbo();
+	DazaiEngine::FrameBufferTexture2d mainTex(width,height,GL_COLOR_ATTACHMENT0,GL_RGB16F,GL_RGB, GL_UNSIGNED_BYTE);
+	DazaiEngine::FrameBufferTexture2d bloomTexture(width,height,GL_COLOR_ATTACHMENT1,GL_RGB16F,GL_RGB, GL_UNSIGNED_BYTE);
+	GLenum attachments[2] = { GL_COLOR_ATTACHMENT0 , GL_COLOR_ATTACHMENT1 };
+	mainFrameBuffer.setDrawBuffer(2,attachments);
+	// Error checking framebuffer
+	auto fboStatus = glCheckFramebufferStatus(GL_FRAMEBUFFER);
+	if (fboStatus != GL_FRAMEBUFFER_COMPLETE)
+		std::cout << "Post-Processing Framebuffer error: " << fboStatus << std::endl;
 
-	// shadowMap Framebuffer
+	DazaiEngine::RenderBuffer rb(width,height);
+	mainFrameBuffer.unbind();
+	//pingpong buffer for bloom
+	DazaiEngine::FrameBuffer ping;
+	DazaiEngine::FrameBufferTexture2d pingTex(width,height, GL_COLOR_ATTACHMENT0, GL_RGBA16F, GL_RGB, GL_UNSIGNED_BYTE);
+	DazaiEngine::FrameBuffer pong;
+	DazaiEngine::FrameBufferTexture2d pongTex(width, height, GL_COLOR_ATTACHMENT0, GL_RGBA16F, GL_RGB, GL_UNSIGNED_BYTE);
+	unsigned int pingpongFBO[2] = {ping.id,pong.id};
+	DazaiEngine::FrameBufferTexture2d* pingpongBuffer[2] = { &pingTex,&pongTex};
 	
+
 	while (!glfwWindowShouldClose(window)) {
 		//timer
 		DazaiEngine::Time::updateDeltaTime();
@@ -222,7 +232,7 @@ int main()
 		glfwSetWindowTitle(window, windowText.c_str());
 		
 		//framebuffer
-		fb.bind();
+		mainFrameBuffer.bind();
 		glClearColor(0.1f, 0.1f, 0.1f, 1.0f);
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT );
 		glEnable(GL_DEPTH_TEST);
@@ -243,11 +253,39 @@ int main()
 		//draw skybox
 		skybox.draw(skyboxShader, skyboxTex, camera);
 		//light.draw(lightShader, tex,camera,scene, lightTransform.position,lightTransform.rotation,lightTransform.scale);
-		fb.unbind();
+		//BLOOM-----------
+		bool horizontal = true, first_iteration = true;
+		int amount = 2;
+		blurShader.bind();
+		for (unsigned int i = 0; i < amount; i++)
+		{
+			glBindFramebuffer(GL_FRAMEBUFFER, pingpongFBO[horizontal]);
+			blurShader.setInt("horizontal", horizontal);
+			// In the first bounc we want to get the data from the bloomTexture
+			if (first_iteration)
+			{
+				glBindTexture(GL_TEXTURE_2D, bloomTexture.id);
+				first_iteration = false;
+			}
+			// Move the data between the pingPong textures
+			else
+			{
+				glBindTexture(GL_TEXTURE_2D, pingpongBuffer[!horizontal]->id);
+			}
+			mainFrameBuffer.bindVao();
+			glDisable(GL_DEPTH_TEST); // dont do on framebuffer Rect
+			glDrawArrays(GL_TRIANGLES, 0, 6);
+			horizontal = !horizontal;	
+		}
+		//---------------
+		mainFrameBuffer.unbind();
 		frameBufferShader.bind();
-		fb.bindVao();
+		mainFrameBuffer.bindVao();
 		glDisable(GL_DEPTH_TEST); // dont do on framebuffer Rect
-		fbTex.bind();
+		glActiveTexture(GL_TEXTURE0);
+		glBindTexture(GL_TEXTURE_2D, mainTex.id);
+		glActiveTexture(GL_TEXTURE1);
+		glBindTexture(GL_TEXTURE_2D, pingpongBuffer[!horizontal]->id);
 		glDrawArrays(GL_TRIANGLES,0,6);
 		
 		//--

@@ -4,9 +4,14 @@ in vec2 texCoords;
 out vec4 FragColor;
 
 uniform sampler2D screenTexture;
+uniform sampler2D bloomTexture;
+
 uniform float gamma = 2.2f;
-uniform int useHdr =1;
 uniform float exposure =2f;
+
+uniform bool useHdr = true;
+uniform bool useBloom = true;
+
 
 //for neighbor pixels
 const float offset_x = 1.0f / 800.0f;  
@@ -40,9 +45,16 @@ void main()
     */
 
     vec3 fragment = texture(screenTexture, texCoords).rgb;
-    if(useHdr == 1)
+    vec3 bloom =    texture(bloomTexture, texCoords).rgb;
+    vec3 color = fragment;
+    if(useBloom)
+    {
+        color = fragment + bloom;
+    } 
+
+    if(useHdr)
 	{
-		fragment = vec3(1.0f) - exp(-fragment * exposure); //tonemapped
+		color = vec3(1.0f) - exp(-color * exposure); //tonemapped
 	}
-    FragColor.rgb = pow(fragment, vec3(1.0f/gamma));
+    FragColor.rgb = pow(color, vec3(1.0f/gamma));
 }
