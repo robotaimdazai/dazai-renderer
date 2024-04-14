@@ -14,6 +14,7 @@ if (POLICY CMP0141)
   set(CMAKE_MSVC_DEBUG_INFORMATION_FORMAT "$<IF:$<AND:$<C_COMPILER_ID:MSVC>,$<CXX_COMPILER_ID:MSVC>>,$<$<CONFIG:Debug,RelWithDebInfo>:EditAndContinue>,$<$<CONFIG:Debug,RelWithDebInfo>:ProgramDatabase>>")
 endif()
 
+include_directories("vendor/imgui")
 
 add_subdirectory("vendor/glfw")
 add_subdirectory("vendor/glm")
@@ -36,8 +37,27 @@ add_definitions(-DRESOURCES="${RESOURCES_DIRECTORY}")
 file(GLOB_RECURSE MY_SOURCES CONFIGURE_DEPENDS "${CMAKE_CURRENT_SOURCE_DIR}/src/*.cpp")
 
 #file(COPY ${CMAKE_SOURCE_DIR}/resources DESTINATION ${CMAKE_BINARY_DIR})
+add_executable (DazaiRenderer "${MY_SOURCES}" 
+"vendor/glad/glad.h" 
+"vendor/glad/glad.c"
 
-add_executable (DazaiRenderer "${MY_SOURCES}" "vendor/glad/glad.h" "vendor/glad/glad.c") #if lib is not with cmake, if its header only then dont
+"vendor/imgui/imgui.cpp"
+"vendor/imgui/imgui.h"
+"vendor/imgui/imconfig.h"
+"vendor/imgui/imgui_demo.cpp"
+"vendor/imgui/imgui_draw.cpp"
+"vendor/imgui/imgui_internal.h"
+"vendor/imgui/imstb_rectpack.h"
+"vendor/imgui/imstb_textedit.h"
+"vendor/imgui/imstb_truetype.h"
+"vendor/imgui/imgui_widgets.cpp"
+"vendor/imgui/imgui_tables.cpp"
+"vendor/imgui/backends/imgui_impl_glfw.h"
+"vendor/imgui/backends/imgui_impl_glfw.cpp"
+"vendor/imgui/backends/imgui_impl_opengl3.h"
+"vendor/imgui/backends/imgui_impl_opengl3.cpp"
+"vendor/imgui/backends/imgui_impl_opengl3_loader.h"
+) #if lib is not with cmake, if its header only then dont
 
 target_link_libraries(DazaiRenderer PRIVATE glfw glm)  # keep adding libs here
 
