@@ -24,14 +24,15 @@
 #include "core/TextureCubemap.hpp"
 #include "core/Skybox.hpp"
 #include "imgui/imgui.h";
-#include "imgui/backends/imgui_impl_opengl3.h";
-#include "imgui/backends/imgui_impl_glfw.h";
+#include "imgui/backends/imgui_impl_opengl3.h"
+#include "imgui/backends/imgui_impl_glfw.h"
 
 const unsigned int width = 800;
 const unsigned int height = 800;
 
 int main()
 {
+
 	glfwInit();
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
@@ -113,14 +114,15 @@ int main()
 	//load glb
 	//auto results = DazaiEngine::Gltfloader::load("models/csgo.glb");
 
+	DazaiEngine::Resources::loadAllShaders();
 	//shaders
-	DazaiEngine::Shader shader("shaders/default.vert", "shaders/default.frag");
-	DazaiEngine::Shader instancedShader("shaders/defaultinstanced.vert", "shaders/default.frag", "shaders/default.geom");
-	DazaiEngine::Shader lightShader("shaders/light.vert", "shaders/light.frag");
-	DazaiEngine::Shader outlineShader("shaders/outline.vert", "shaders/light.frag");
-	DazaiEngine::Shader frameBufferShader("shaders/framebuffer.vert", "shaders/framebuffer.frag");
-	DazaiEngine::Shader blurShader("shaders/framebuffer.vert", "shaders/blur.frag");
-	DazaiEngine::Shader skyboxShader("shaders/skybox.vert", "shaders/skybox.frag");
+	auto shader = DazaiEngine::Resources::getShader(SHADER_DEFAULT);
+	auto shaderInstanced= DazaiEngine::Resources::getShader(SHADER_DEFAULT_INSTANCED);
+	auto lightShader = DazaiEngine::Resources::getShader(SHADER_LIGHT);
+	auto outline =DazaiEngine::Resources::getShader(SHADER_OUTLINE);
+	auto frameBufferShader = DazaiEngine::Resources::getShader(SHADER_FRAMEBUFFER);
+	auto blurShader = DazaiEngine::Resources::getShader(SHADER_BLUR);
+	auto skyboxShader = DazaiEngine::Resources::getShader(SHADER_SKYBOX);
 
 	frameBufferShader.bind();
 	frameBufferShader.setInt("screenTexture", 0);
@@ -236,6 +238,7 @@ int main()
 	DazaiEngine::FrameBufferTexture2d pongTex(width, height, GL_COLOR_ATTACHMENT0, GL_RGBA16F, GL_RGB, GL_UNSIGNED_BYTE);
 	unsigned int pingpongFBO[2] = {ping.id,pong.id};
 	DazaiEngine::FrameBufferTexture2d* pingpongBuffer[2] = { &pingTex,&pongTex};
+	
 	
 
 	while (!glfwWindowShouldClose(window)) {

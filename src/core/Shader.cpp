@@ -1,5 +1,5 @@
 #include "shader.hpp"
-
+#include "../util/Resources.hpp";
 
 namespace DazaiEngine 
 {
