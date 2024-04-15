@@ -20,6 +20,8 @@ namespace DazaiEngine
 		std::vector<GLuint> indices;
 		auto draw(Shader& shader, std::vector<Texture2d> textures, Camera& camera, const Scene& scene, 
 			glm::vec3& position, glm::quat& rotation, glm::vec3& scale)->void;
+		auto draw(Shader& shader, Camera& camera, const Scene& scene,
+			glm::vec3& position, glm::quat& rotation, glm::vec3& scale) -> void;
 		Vao vao;
 		unsigned int instances;
 	};

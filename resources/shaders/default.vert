@@ -16,6 +16,7 @@ out vec4 fragPosLight;
 out vec3 tbnCamPos;
 out vec3 tbnLightPos;
 out vec3 tbnFragPos;
+out vec3 vcamPos;
 
 
 uniform mat4 model;
@@ -27,6 +28,7 @@ uniform vec3 lightPos;
 void main()
 {
 	currentPos = vec3(model * vec4(aPos,1.0f));
+	vcamPos = camPos;
 	normal = aNormal;
 	color = aColor;
 	texCoord = aTex;

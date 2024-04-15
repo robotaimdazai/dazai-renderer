@@ -94,7 +94,7 @@ namespace DazaiEngine
                 loadShader(SHADER_LIGHT,
                     "shaders/light.vert", "shaders/light.frag");
                 loadShader(SHADER_OUTLINE,
-                    "shaders/outline.vert", "shaders/light.frag");
+                    "shaders/outline.vert", "shaders/outline.frag");
                  loadShader(SHADER_FRAMEBUFFER,
                     "shaders/framebuffer.vert", "shaders/framebuffer.frag");
                  loadShader(SHADER_BLUR,

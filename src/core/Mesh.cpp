@@ -15,17 +15,18 @@ namespace DazaiEngine
 		vao.linkAttrib(vbo, 2, 3, GL_FLOAT, sizeof(Vertex), (void*)(5 * sizeof(float)));
 		vao.linkAttrib(vbo, 3, 3, GL_FLOAT, sizeof(Vertex), (void*)(8 * sizeof(float)));
 		vao.linkAttrib(vbo, 4, 3, GL_FLOAT, sizeof(Vertex), (void*)(12 * sizeof(float)));
+			
 		if (instances != 1)
 		{
 			instanceVbo.bind();
-			vao.linkAttrib(instanceVbo, 4, 4, GL_FLOAT, sizeof(glm::mat4), (void*)0);
-			vao.linkAttrib(instanceVbo, 5, 4, GL_FLOAT, sizeof(glm::mat4), (void*) sizeof(glm::vec4));
-			vao.linkAttrib(instanceVbo, 6, 4, GL_FLOAT, sizeof(glm::mat4), (void*) (2 * sizeof(glm::vec4)));
-			vao.linkAttrib(instanceVbo, 7, 4, GL_FLOAT, sizeof(glm::mat4), (void*) (3 * sizeof(glm::vec4)));
-			glVertexAttribDivisor(4, 1);
+			vao.linkAttrib(instanceVbo, 5, 4, GL_FLOAT, sizeof(glm::mat4), (void*)0);
+			vao.linkAttrib(instanceVbo, 6, 4, GL_FLOAT, sizeof(glm::mat4), (void*) sizeof(glm::vec4));
+			vao.linkAttrib(instanceVbo, 7, 4, GL_FLOAT, sizeof(glm::mat4), (void*) (2 * sizeof(glm::vec4)));
+			vao.linkAttrib(instanceVbo, 8, 4, GL_FLOAT, sizeof(glm::mat4), (void*) (3 * sizeof(glm::vec4)));
 			glVertexAttribDivisor(5, 1);
 			glVertexAttribDivisor(6, 1);
 			glVertexAttribDivisor(7, 1);
+			glVertexAttribDivisor(8, 1);
 		}
 		instanceVbo.unbind();
 		vao.unbind();
@@ -69,5 +70,28 @@ namespace DazaiEngine
 		}
 	
 		
+	}
+	auto Mesh::draw(Shader& shader, Camera& camera, const Scene& scene, glm::vec3& position, glm::quat& rotation, glm::vec3& scale) -> void
+	{
+		vao.bind();
+		shader.bind();
+		shader.setVec3("camPos", camera.position);
+		camera.bindtoShader(shader, "camMatrix");
+		shader.setVec4(Scene::LIGHT_COLOR_UNIFORM, scene.lightColor);
+		shader.setVec3(Scene::LIGHT_POS_UNIFORM, scene.lightPos);
+		if (instances == 1)
+		{
+			auto model = glm::mat4(1.0f);
+			model = glm::translate(model, position);
+			auto rot = glm::mat4_cast(rotation);
+			model *= rot;
+			model = glm::scale(model, scale);
+			shader.setMat4("model", model);
+			glDrawElements(GL_TRIANGLES, indices.size(), GL_UNSIGNED_INT, 0);
+		}
+		else
+		{
+			glDrawElementsInstanced(GL_TRIANGLES, indices.size(), GL_UNSIGNED_INT, 0, instances);
+		}
 	}
 }

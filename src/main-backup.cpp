@@ -30,7 +30,7 @@
 const unsigned int width = 800;
 const unsigned int height = 800;
 
-int main()
+int mainbackup()
 {
 
 	glfwInit();
@@ -60,7 +60,7 @@ int main()
 	gladLoadGL();
 
 	
-	glfwSwapInterval(0);
+	//glfwSwapInterval(0);
 	glEnable(GL_STENCIL_TEST);
 	glStencilOp(GL_KEEP, GL_KEEP, GL_REPLACE);
 	glViewport(0,0,width,height); 
@@ -119,7 +119,7 @@ int main()
 	auto shader = DazaiEngine::Resources::getShader(SHADER_DEFAULT);
 	auto shaderInstanced= DazaiEngine::Resources::getShader(SHADER_DEFAULT_INSTANCED);
 	auto lightShader = DazaiEngine::Resources::getShader(SHADER_LIGHT);
-	auto outlineShader =DazaiEngine::Resources::getShader(SHADER_OUTLINE);
+	auto outline =DazaiEngine::Resources::getShader(SHADER_OUTLINE);
 	auto frameBufferShader = DazaiEngine::Resources::getShader(SHADER_FRAMEBUFFER);
 	auto blurShader = DazaiEngine::Resources::getShader(SHADER_BLUR);
 	auto skyboxShader = DazaiEngine::Resources::getShader(SHADER_SKYBOX);
@@ -151,7 +151,7 @@ int main()
 	//create scene
 	DazaiEngine::Scene scene;
 	DazaiEngine::Transform lightTransform;
-	lightTransform.position = { 0.5,1.5f,1.5f };
+	lightTransform.position = { 0.5,0.5f,1.5f };
 	scene.lightColor = { 1.0f,1.0f,1.0f,1.0f };
 	scene.lightPos = lightTransform.position;
 
@@ -160,7 +160,7 @@ int main()
 	//models
 	//for instancing
 	// The number of asteroids to be created
-	const unsigned int number = 500;
+	const unsigned int number = 100;
 	// Radius of circle around which asteroids orbit
 	float radius = 10;
 	// How much ateroids deviate from the radius
@@ -209,8 +209,7 @@ int main()
 		// Push matrix transformation
 		instanceMatrix.push_back(trans * rot * sca);
 	}
-	//DazaiEngine::Model model("models/cs.glb", &shaderInstanced,number,instanceMatrix);
-	DazaiEngine::Model model("models/cs.glb",&shaderInstanced,number,instanceMatrix);
+	DazaiEngine::Model model("models/cs.glb", &shader);
 	model.transform.position = { 0,0,0 };
 	model.transform.rotation = { 0,0,0,0 };
 	//skybox
@@ -254,6 +253,7 @@ int main()
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT );
 		glEnable(GL_DEPTH_TEST);
 		//camera
+		shader.bind();
 		camera.input(window);
 		camera.updateMatrix(45.0f,0.1f,100.0f);
 		//render
@@ -261,16 +261,15 @@ int main()
 		model.draw(camera,scene);
 		glStencilFunc(GL_NOTEQUAL,1, 0xff);
 		glDisable(GL_DEPTH_TEST);
-		outlineShader.bind();
-		outlineShader.setFloat("outlining", 0.02f);
-		//model.draw(camera,outlineShader,scene);
+		//outlineShader.bind();
+		//outlineShader.setFloat("outlining", 0.02f);
+		//model.draw(camera, scene, outlineMaterial);
 		glStencilFunc(GL_ALWAYS, 0, 0xff);
 		glEnable(GL_DEPTH_TEST);
-		light.draw(lightShader, camera, scene, lightTransform.position, lightTransform.rotation, lightTransform.scale);
 		//draw skybox
 		skybox.draw(skyboxShader, skyboxTex, camera);
+		//light.draw(lightShader, tex,camera,scene, lightTransform.position,lightTransform.rotation,lightTransform.scale);
 		//BLOOM-----------
-		
 		bool horizontal = true, first_iteration = true;
 		int amount = 2;
 		blurShader.bind();
@@ -295,17 +294,14 @@ int main()
 			horizontal = !horizontal;	
 		}
 		//---------------
-		
 		mainFrameBuffer.unbind();
 		frameBufferShader.bind();
 		mainFrameBuffer.bindVao();
 		glDisable(GL_DEPTH_TEST); // dont do on framebuffer Rect
 		glActiveTexture(GL_TEXTURE0);
 		glBindTexture(GL_TEXTURE_2D, mainTex.id);
-		
 		glActiveTexture(GL_TEXTURE1);
 		glBindTexture(GL_TEXTURE_2D, pingpongBuffer[!horizontal]->id);
-		
 		glDrawArrays(GL_TRIANGLES,0,6);
 		
 	
@@ -327,7 +323,7 @@ int main()
 		glfwSwapBuffers(window);
 		glfwPollEvents();
 		//FPS cap
-		//DazaiEngine::Time::delayTime();
+		DazaiEngine::Time::delayTime();
 	}
 	glfwDestroyWindow(window);
 	glfwTerminate();

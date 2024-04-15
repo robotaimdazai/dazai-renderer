@@ -47,11 +47,13 @@ namespace DazaiEngine
 	}
 	auto Texture2d::bind() -> void
 	{
+	
 		glActiveTexture(GL_TEXTURE0 + slot);
 		glBindTexture(GL_TEXTURE_2D, id);
 	}
 	auto Texture2d::unbind() -> void
 	{
+		glActiveTexture(GL_TEXTURE0);
 		glBindTexture(GL_TEXTURE_2D, 0);
 	}
 	auto Texture2d::destroy() -> void

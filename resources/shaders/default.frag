@@ -7,7 +7,7 @@ in vec3 currentPos;
 in vec2 texCoord;
 in vec3 normal;
 in vec3 color;
-in vec3 camPos;
+in vec3 vcamPos;
 in vec4 fragPosLight;
 in vec3 vLightPos;
 in vec3 tbnCamPos;
@@ -50,7 +50,7 @@ vec4 pointLight()
 	float specular = 0.0f;
 	if(diffuse!=0.0f)//to prevent from light under the object
 	{
-		vec3 viewDirection = normalize(camPos- currentPos);
+		vec3 viewDirection = normalize(vcamPos- currentPos);
 		if(useNormalMap == 1)
 		{
 			viewDirection= normalize(tbnCamPos - tbnFragPos);
@@ -101,7 +101,7 @@ vec4 directionalLight()
 	float specular = 0.0f;
 	if(diffuse!=0.0f)
 	{
-		vec3 viewDirection = normalize(camPos - currentPos);
+		vec3 viewDirection = normalize(vcamPos - currentPos);
 		if(useNormalMap == 1)
 		{
 			viewDirection= normalize(tbnCamPos - tbnFragPos);
@@ -172,7 +172,7 @@ vec4 spotLight()
 	float intensity = 0.0f;
 	if(diffuse!=0.0f)
 	{
-		vec3 viewDirection = normalize(camPos- currentPos);
+		vec3 viewDirection = normalize(vcamPos- currentPos);
 		if(useNormalMap == 1)
 		{
 			viewDirection= normalize(tbnCamPos - tbnFragPos);
