@@ -26,7 +26,7 @@ uniform float specularLight =1.0f;
 uniform float specPower = 128;
 uniform int blinnPhong = 1;
 uniform int shadowMapping =	0;
-uniform int useNormalMap = 1;
+uniform int useNormalMap = 0;
 uniform int useAmbientOcclusion = 1;
 
 
@@ -37,7 +37,7 @@ vec4 pointLight()
 	float d = length(ligtVec);
 	float a = 3.0;
 	float b = 0.7;
-	float attenuation = 1.0f/(a * d * d) + (b * d + 1f);
+	float attenuation = 1.0f/(a * d * d + b * d + 1f);
 	vec3 normalizedNormal = normalize(normal);
 	vec3 lightDirection = normalize(ligtVec);
 	if(useNormalMap == 1)
@@ -236,7 +236,7 @@ void main()
 	//float depth  = logisticDepth(gl_FragCoord.z);
 	//FragColor = directionalLight() * (1.0f - depth) + vec4(depth * vec3(0.85f, 0.85f, 0.90f), 1.0f);
 	//----
-	FragColor = directionalLight();
+	FragColor = pointLight();
 
 	float brightness = dot(FragColor.rgb, vec3(0.2126f, 0.7152f,0.0722f));
 	if(brightness > 0.15)

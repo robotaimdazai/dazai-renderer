@@ -33,17 +33,13 @@ namespace DazaiEngine
 		vbo.unbind();
 		ebo.unbind();
 	}
-	auto Mesh::draw(Shader& shader, std::vector<Texture2d> textures, Camera& camera, const Scene& scene, 
-		glm::vec3& position, glm::quat& rotation, glm::vec3& scale
+	auto Mesh::draw(Shader& shader, Camera& camera, std::vector<Texture2d> textures, glm::vec3& position, glm::quat& rotation, glm::vec3& scale
 		)->void
 	{
 		vao.bind();
 		shader.bind();
 		shader.setVec3("camPos", camera.position);
 		camera.bindtoShader(shader, "camMatrix");
-		shader.setVec4(Scene::LIGHT_COLOR_UNIFORM, scene.lightColor);
-		shader.setVec3(Scene::LIGHT_POS_UNIFORM, scene.lightPos);
-		//shader.setMat4(Scene::LIGHT_PROJECTION_UNIFORM, scene.lightProjection);
 		for (size_t i = 0; i < textures.size(); i++)
 		{
 			textures[i].bindToSlot(shader, textures[i].texType);
@@ -71,14 +67,12 @@ namespace DazaiEngine
 	
 		
 	}
-	auto Mesh::draw(Shader& shader, Camera& camera, const Scene& scene, glm::vec3& position, glm::quat& rotation, glm::vec3& scale) -> void
+	auto Mesh::draw(Shader& shader, Camera& camera, glm::vec3& position, glm::quat& rotation, glm::vec3& scale) -> void
 	{
 		vao.bind();
 		shader.bind();
 		shader.setVec3("camPos", camera.position);
 		camera.bindtoShader(shader, "camMatrix");
-		shader.setVec4(Scene::LIGHT_COLOR_UNIFORM, scene.lightColor);
-		shader.setVec3(Scene::LIGHT_POS_UNIFORM, scene.lightPos);
 		if (instances == 1)
 		{
 			auto model = glm::mat4(1.0f);

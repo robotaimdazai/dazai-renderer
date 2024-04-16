@@ -25,29 +25,29 @@ namespace DazaiEngine
 		meshes.push_back(mesh);
 		materials.push_back(material);
 	}
-	auto Model::draw(Camera& camera, const Scene& scene) -> void
+	auto Model::draw(Camera& camera) -> void
 	{
 		for (size_t i = 0; i < meshes.size(); i++)
 		{
-			meshes[i].draw(*materials[i].shader, materials[i].textures, camera, scene,
+			meshes[i].draw(*materials[i].shader, camera, materials[i].textures,
 				transform.position,transform.rotation,transform.scale);
 		}
 	}
 
-	auto Model::draw(Camera& camera, const Scene& scene, Material& material) -> void
+	auto Model::draw(Camera& camera, Material& material) -> void
 	{
 		for (size_t i = 0; i < meshes.size(); i++)
 		{
-			meshes[i].draw(*material.shader, material.textures, camera, scene,
+			meshes[i].draw(*material.shader, camera, material.textures, 
 				transform.position, transform.rotation, transform.scale);
 		}
 	}
 
-	auto Model::draw(Camera& camera, Shader& shader, Scene& scene) -> void
+	auto Model::draw(Camera& camera, Shader& shader) -> void
 	{
 		for (size_t i = 0; i < meshes.size(); i++)
 		{
-			meshes[i].draw(shader, materials[i].textures, camera, scene,
+			meshes[i].draw(shader, camera, materials[i].textures, 
 				transform.position, transform.rotation, transform.scale);
 		}
 	}

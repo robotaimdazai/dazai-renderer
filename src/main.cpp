@@ -17,15 +17,15 @@
 #include "core/Mesh.hpp"
 #include "core/Material.hpp"
 #include "core/Model.hpp"
-#include "core/Scene.hpp"
 #include "core/FrameBuffer.hpp"
 #include "core/FrameBufferTexture2d.hpp"
 #include "core/RenderBuffer.hpp"
 #include "core/TextureCubemap.hpp"
 #include "core/Skybox.hpp"
-#include "imgui/imgui.h";
+#include "imgui/imgui.h"
 #include "imgui/backends/imgui_impl_opengl3.h"
 #include "imgui/backends/imgui_impl_glfw.h"
+#include "core/Light.hpp"
 
 const unsigned int width = 800;
 const unsigned int height = 800;
@@ -60,7 +60,7 @@ int main()
 	gladLoadGL();
 
 	
-	glfwSwapInterval(0);
+	//glfwSwapInterval(0);
 	glEnable(GL_STENCIL_TEST);
 	glStencilOp(GL_KEEP, GL_KEEP, GL_REPLACE);
 	glViewport(0,0,width,height); 
@@ -76,41 +76,7 @@ int main()
 		DazaiEngine::Vertex{glm::vec3(1.0f, 0.0f,  1.0f), glm::vec2(1.0f, 0.0f), glm::vec3(1.0f, 1.0f, 1.0f), glm::vec3(0.0f, 1.0f, 0.0f)}
 	};
 
-	// Indices for vertices order
-	GLuint indices[] =
-	{
-		0, 1, 2,
-		0, 2, 3
-	};
-
-	DazaiEngine::Vertex lightVertices[] =
-	{ //     COORDINATES     //
-		DazaiEngine::Vertex{glm::vec3(-0.1f, -0.1f,  0.1f)},
-		DazaiEngine::Vertex{glm::vec3(-0.1f, -0.1f, -0.1f)},
-		DazaiEngine::Vertex{glm::vec3(0.1f, -0.1f, -0.1f)},
-		DazaiEngine::Vertex{glm::vec3(0.1f, -0.1f,  0.1f)},
-		DazaiEngine::Vertex{glm::vec3(-0.1f,  0.1f,  0.1f)},
-		DazaiEngine::Vertex{glm::vec3(-0.1f,  0.1f, -0.1f)},
-		DazaiEngine::Vertex{glm::vec3(0.1f,  0.1f, -0.1f)},
-		DazaiEngine::Vertex{glm::vec3(0.1f,  0.1f,  0.1f)}
-	};
-
-	GLuint lightIndices[] =
-	{
-		0, 1, 2,
-		0, 2, 3,
-		0, 4, 7,
-		0, 7, 3,
-		3, 7, 6,
-		3, 6, 2,
-		2, 6, 5,
-		2, 5, 1,
-		1, 5, 4,
-		1, 4, 0,
-		4, 5, 6,
-		4, 6, 7
-	};
-
+	
 	//load glb
 	//auto results = DazaiEngine::Gltfloader::load("models/csgo.glb");
 
@@ -143,20 +109,8 @@ int main()
 	);
 	skyboxShader.bind();
 	skyboxShader.setInt("skybox", 0);
-	//data
-	//light
-	std::vector<DazaiEngine::Vertex> lightVerts(lightVertices, lightVertices + sizeof(lightVertices) / sizeof(DazaiEngine::Vertex));
-	std::vector<GLuint> lightInd(lightIndices, lightIndices + sizeof(lightIndices) / sizeof(GLuint));
-	
-	//create scene
-	DazaiEngine::Scene scene;
-	DazaiEngine::Transform lightTransform;
-	lightTransform.position = { 0.5,1.5f,1.5f };
-	scene.lightColor = { 1.0f,1.0f,1.0f,1.0f };
-	scene.lightPos = lightTransform.position;
 
-	//meshes
-	DazaiEngine::Mesh light(lightVerts, lightInd);
+	
 	//models
 	//for instancing
 	// The number of asteroids to be created
@@ -191,10 +145,7 @@ int main()
 			// Generates a translation near a circle of radius "radius"
 			tempTranslation = glm::vec3(x * finalRadius, randf, y * finalRadius);
 		}
-		// Generates random rotations
-		//tempRotation = glm::quat(1.0f, randf, randf, randf);
-		// Generates random scales
-
+		
 
 		// Initialize matrices
 		glm::mat4 trans = glm::mat4(1.0f);
@@ -210,13 +161,9 @@ int main()
 		instanceMatrix.push_back(trans * rot * sca);
 	}
 	//DazaiEngine::Model model("models/cs.glb", &shaderInstanced,number,instanceMatrix);
-	DazaiEngine::Model model("models/cs.glb",&shaderInstanced,number,instanceMatrix);
-	model.transform.position = { 0,0,0 };
-	model.transform.rotation = { 0,0,0,0 };
+	DazaiEngine::Model model("models/cs.glb",&shader);
 	//skybox
 	DazaiEngine::Skybox skybox;
-	//model.transform.scale = { 1,1,1 };
-	// -------------------------------------------------------------------------------
 	
 	//framebuffer
 	DazaiEngine::FrameBuffer mainFrameBuffer;
@@ -229,7 +176,7 @@ int main()
 	auto fboStatus = glCheckFramebufferStatus(GL_FRAMEBUFFER);
 	if (fboStatus != GL_FRAMEBUFFER_COMPLETE)
 		std::cout << "Post-Processing Framebuffer error: " << fboStatus << std::endl;
-
+	//
 	DazaiEngine::RenderBuffer rb(width,height);
 	mainFrameBuffer.unbind();
 	//pingpong buffer for bloom
@@ -240,7 +187,7 @@ int main()
 	unsigned int pingpongFBO[2] = {ping.id,pong.id};
 	DazaiEngine::FrameBufferTexture2d* pingpongBuffer[2] = { &pingTex,&pongTex};
 	
-	
+	DazaiEngine::Light light;
 
 	while (!glfwWindowShouldClose(window)) {
 		//timer
@@ -258,15 +205,18 @@ int main()
 		camera.updateMatrix(45.0f,0.1f,100.0f);
 		//render
 		glStencilFunc(GL_ALWAYS, 1, 0xff);
-		model.draw(camera,scene);
+		shader.bind();
+		shader.setVec3("lightPos", light.transform.position );
+		shader.setVec4("lightColor", light.color );
+		model.draw(camera,shader);
 		glStencilFunc(GL_NOTEQUAL,1, 0xff);
 		glDisable(GL_DEPTH_TEST);
-		outlineShader.bind();
-		outlineShader.setFloat("outlining", 0.02f);
-		//model.draw(camera,outlineShader,scene);
+		//outlineShader.bind();
+		//outlineShader.setFloat("outlining", 0.02f);
+		//model.draw(camera,outlineShader);
 		glStencilFunc(GL_ALWAYS, 0, 0xff);
 		glEnable(GL_DEPTH_TEST);
-		light.draw(lightShader, camera, scene, lightTransform.position, lightTransform.rotation, lightTransform.scale);
+		light.draw(camera,lightShader);
 		//draw skybox
 		skybox.draw(skyboxShader, skyboxTex, camera);
 		//BLOOM-----------
@@ -302,10 +252,8 @@ int main()
 		glDisable(GL_DEPTH_TEST); // dont do on framebuffer Rect
 		glActiveTexture(GL_TEXTURE0);
 		glBindTexture(GL_TEXTURE_2D, mainTex.id);
-		
 		glActiveTexture(GL_TEXTURE1);
 		glBindTexture(GL_TEXTURE_2D, pingpongBuffer[!horizontal]->id);
-		
 		glDrawArrays(GL_TRIANGLES,0,6);
 		
 	
@@ -316,7 +264,9 @@ int main()
 		ImGui::NewFrame();
 		//----IMGUI Rendering-----------
 		//
-				ImGui::ShowDemoWindow();
+		ImGui::Begin("Debug");
+		ImGui::SliderFloat3("Light Pos", &light.transform.position.x,-10,10);
+		ImGui::End();
 
 		//
 		//------------------------------
