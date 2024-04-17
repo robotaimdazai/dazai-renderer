@@ -274,7 +274,7 @@ int main()
 		
 	
 		// 
-		//IMGUI---------------------------------------------------------
+		//IMGUI-------------------------
 		ImGui_ImplOpenGL3_NewFrame();
 		ImGui_ImplGlfw_NewFrame();
 		ImGui::NewFrame();
@@ -314,6 +314,11 @@ int main()
 		ImGui::SliderInt("Effect Type", &effectType, 0, 2);
 		ImGui::Spacing();
 		ImGui::Spacing();
+		ImGui::Text("Controls");
+		ImGui::Text("Movement: WASD");
+		ImGui::Text("Down/Up: Q/E");
+		ImGui::Text("Camera: Hold Right Click");
+		ImGui::Text("Speed: Hold Shift");
 		ImGui::End();
 
 		//
