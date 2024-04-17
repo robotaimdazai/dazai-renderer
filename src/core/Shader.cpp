@@ -10,7 +10,7 @@ namespace DazaiEngine
 		auto geoId = glCreateShader(GL_GEOMETRY_SHADER);
 		const std::string  vertSrc = Resources::readTextFile(vertPath);
 		const std::string  fragSrc = Resources::readTextFile(fragPath);
-		const std::string  geoSrc =  Resources::readTextFile(geometryShader);
+		const std::string  geoSrc = ""; //Resources::readTextFile(geometryShader);
 		const char* vertSrcPtr = vertSrc.c_str();
 		const char* fragSrcPtr = fragSrc.c_str();
 		const char* geoSrcPtr = geoSrc.c_str();

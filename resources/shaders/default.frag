@@ -217,6 +217,7 @@ vec4 spotLight()
 	
 }
 
+
 float near = 0.1f;
 float far = 100.0f;
 

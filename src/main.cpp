@@ -27,7 +27,7 @@
 #include "imgui/backends/imgui_impl_glfw.h"
 #include "core/Light.hpp"
 
-const unsigned int width = 800;
+const unsigned int width = 1280;
 const unsigned int height = 800;
 
 int main()
@@ -37,7 +37,7 @@ int main()
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
 	glfwWindowHint(GLFW_OPENGL_PROFILE,GLFW_OPENGL_CORE_PROFILE);
-	auto window = glfwCreateWindow(800,600, "Dazai",NULL,NULL);
+	auto window = glfwCreateWindow(width, height, "Dazai",NULL,NULL);
 	if (window == NULL) {
 		std::cout << "Failed to create window" << std::endl;
 		glfwTerminate();
@@ -185,6 +185,8 @@ int main()
 	float bloomIntensity =		0.5f;
 	bool bloom =				0;
 	bool hdr =					0;
+	bool effects =				0;
+	int effectType =			0;
 
 	while (!glfwWindowShouldClose(window)) {
 		//timer
@@ -209,6 +211,8 @@ int main()
 		frameBufferShader.setFloat("bloomIntensity",bloomIntensity);
 		frameBufferShader.setBool("useHdr",hdr);
 		frameBufferShader.setBool("useBloom",bloom);
+		frameBufferShader.setBool("useEffects",effects);
+		frameBufferShader.setInt("effectType", effectType);
 		//default sahder props
 		shader.bind();
 		shader.setBool("useNormalMap", normalMap);
@@ -305,6 +309,9 @@ int main()
 		ImGui::SliderFloat("Bloom Intensity", &bloomIntensity,0,10);
 		ImGui::SliderFloat("Gamma", &gamma,0,5);
 		ImGui::SliderFloat("Exposure", &exposure,0,100);
+		ImGui::Spacing();
+		ImGui::Checkbox("Effects", &effects);
+		ImGui::SliderInt("Effect Type", &effectType, 0, 2);
 		ImGui::Spacing();
 		ImGui::Spacing();
 		ImGui::End();
