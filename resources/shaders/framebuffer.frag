@@ -8,6 +8,7 @@ uniform sampler2D bloomTexture;
 
 uniform float gamma = 2.2f;
 uniform float exposure =2f;
+uniform float bloomIntensity =0.5f;
 
 uniform bool useHdr = true;
 uniform bool useBloom = true;
@@ -49,7 +50,7 @@ void main()
     vec3 color = fragment;
     if(useBloom)
     {
-        color = fragment + bloom;
+        color = fragment + bloom * bloomIntensity;
     } 
 
     if(useHdr)

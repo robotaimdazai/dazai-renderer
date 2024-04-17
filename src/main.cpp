@@ -32,21 +32,17 @@ const unsigned int height = 800;
 
 int main()
 {
-
+#pragma region SCENE SETUP
 	glfwInit();
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
 	glfwWindowHint(GLFW_OPENGL_PROFILE,GLFW_OPENGL_CORE_PROFILE);
-
 	auto window = glfwCreateWindow(800,600, "Dazai",NULL,NULL);
-	
-	
 	if (window == NULL) {
 		std::cout << "Failed to create window" << std::endl;
 		glfwTerminate();
 		return -1;
 	}
-
 	glfwMakeContextCurrent(window);
 	IMGUI_CHECKVERSION();
 	ImGui::CreateContext();
@@ -56,30 +52,13 @@ int main()
 	ImGui::StyleColorsDark();
 	ImGui_ImplGlfw_InitForOpenGL(window, true);          // Second param install_callback=true will install GLFW callbacks and chain to existing ones.
 	ImGui_ImplOpenGL3_Init("#version 130");
-
 	gladLoadGL();
-
-	
 	//glfwSwapInterval(0);
 	glEnable(GL_STENCIL_TEST);
 	glStencilOp(GL_KEEP, GL_KEEP, GL_REPLACE);
 	glViewport(0,0,width,height); 
 	//glEnable(GL_CULL_FACE);
 	glCullFace(GL_BACK);
-	// Vertices coordinates
-	DazaiEngine::Vertex vertices[] =
-	{
-		//               COORDINATES          /       TEXTURE COORDINATES    /           NORMALS         /            COLORS          //
-		DazaiEngine::Vertex{glm::vec3(-1.0f, 0.0f,  1.0f), glm::vec2(0.0f, 0.0f), glm::vec3(1.0f, 1.0f, 1.0f), glm::vec3(0.0f, 1.0f, 0.0f)},
-		DazaiEngine::Vertex{glm::vec3(-1.0f, 0.0f, -1.0f), glm::vec2(0.0f, 1.0f), glm::vec3(1.0f, 1.0f, 1.0f), glm::vec3(0.0f, 1.0f, 0.0f)},
-		DazaiEngine::Vertex{glm::vec3(1.0f, 0.0f, -1.0f), glm::vec2(1.0f, 1.0f), glm::vec3(1.0f, 1.0f, 1.0f), glm::vec3(0.0f, 1.0f, 0.0f)},
-		DazaiEngine::Vertex{glm::vec3(1.0f, 0.0f,  1.0f), glm::vec2(1.0f, 0.0f), glm::vec3(1.0f, 1.0f, 1.0f), glm::vec3(0.0f, 1.0f, 0.0f)}
-	};
-
-	
-	//load glb
-	//auto results = DazaiEngine::Gltfloader::load("models/csgo.glb");
-
 	DazaiEngine::Resources::loadAllShaders();
 	//shaders
 	auto shader = DazaiEngine::Resources::getShader(SHADER_DEFAULT);
@@ -89,13 +68,11 @@ int main()
 	auto frameBufferShader = DazaiEngine::Resources::getShader(SHADER_FRAMEBUFFER);
 	auto blurShader = DazaiEngine::Resources::getShader(SHADER_BLUR);
 	auto skyboxShader = DazaiEngine::Resources::getShader(SHADER_SKYBOX);
-
 	frameBufferShader.bind();
 	frameBufferShader.setInt("screenTexture", 0);
 	frameBufferShader.setInt("bloomTexture", 1);
 	blurShader.bind();
 	blurShader.setInt("screenTexture", 0);
-
 	//camera
 	DazaiEngine::Camera camera(width, height, glm::vec3(0.0f, 0.0f, 2.0f));
 	DazaiEngine::TextureCubemap skyboxTex
@@ -109,8 +86,10 @@ int main()
 	);
 	skyboxShader.bind();
 	skyboxShader.setInt("skybox", 0);
+#pragma endregion
 
-	
+#pragma region INSTANCING EXAMPLE
+
 	//models
 	//for instancing
 	// The number of asteroids to be created
@@ -161,10 +140,10 @@ int main()
 		instanceMatrix.push_back(trans * rot * sca);
 	}
 	//DazaiEngine::Model model("models/cs.glb", &shaderInstanced,number,instanceMatrix);
-	DazaiEngine::Model model("models/cs.glb",&shader);
-	//skybox
-	DazaiEngine::Skybox skybox;
-	
+#pragma endregion
+
+#pragma region FRAMEBUFFER SETUP
+
 	//framebuffer
 	DazaiEngine::FrameBuffer mainFrameBuffer;
 	mainFrameBuffer.createVaoVbo();
@@ -176,7 +155,6 @@ int main()
 	auto fboStatus = glCheckFramebufferStatus(GL_FRAMEBUFFER);
 	if (fboStatus != GL_FRAMEBUFFER_COMPLETE)
 		std::cout << "Post-Processing Framebuffer error: " << fboStatus << std::endl;
-	//
 	DazaiEngine::RenderBuffer rb(width,height);
 	mainFrameBuffer.unbind();
 	//pingpong buffer for bloom
@@ -186,8 +164,27 @@ int main()
 	DazaiEngine::FrameBufferTexture2d pongTex(width, height, GL_COLOR_ATTACHMENT0, GL_RGBA16F, GL_RGB, GL_UNSIGNED_BYTE);
 	unsigned int pingpongFBO[2] = {ping.id,pong.id};
 	DazaiEngine::FrameBufferTexture2d* pingpongBuffer[2] = { &pingTex,&pongTex};
-	
+#pragma endregion
+
+	DazaiEngine::Skybox skybox;
+	DazaiEngine::Model model("models/cs.glb", &shader);
 	DazaiEngine::Light light;
+	//DEFAULT PROPERTIES
+	light.transform.position =  { 0,2.7f,2.3f };
+	//default
+	bool normalMap =			0;
+	bool ao =					0;
+	bool blinPhong =			1;
+	float ambient =				0.3f;
+	float specular =			0.8f;
+	float specularPower =		128;
+	int lightType =				0;
+	//framebuffer
+	float gamma =				2.2f;
+	float exposure =			2;
+	float bloomIntensity =		0.5f;
+	bool bloom =				0;
+	bool hdr =					0;
 
 	while (!glfwWindowShouldClose(window)) {
 		//timer
@@ -205,9 +202,24 @@ int main()
 		camera.updateMatrix(45.0f,0.1f,100.0f);
 		//render
 		glStencilFunc(GL_ALWAYS, 1, 0xff);
+		//framebuffer props
+		frameBufferShader.bind();
+		frameBufferShader.setFloat("gamma",gamma);
+		frameBufferShader.setFloat("exposure",exposure);
+		frameBufferShader.setFloat("bloomIntensity",bloomIntensity);
+		frameBufferShader.setBool("useHdr",hdr);
+		frameBufferShader.setBool("useBloom",bloom);
+		//default sahder props
 		shader.bind();
+		shader.setBool("useNormalMap", normalMap);
+		shader.setBool("useAmbientOcclusion", ao);
+		shader.setBool("blinnPhong", blinPhong);
+		shader.setFloat("ambient", ambient);
+		shader.setFloat("specularLight", specular);
+		shader.setFloat("specPower", specularPower);
 		shader.setVec3("lightPos", light.transform.position );
 		shader.setVec4("lightColor", light.color );
+		shader.setInt("lightType", lightType );
 		model.draw(camera,shader);
 		glStencilFunc(GL_NOTEQUAL,1, 0xff);
 		glDisable(GL_DEPTH_TEST);
@@ -264,8 +276,37 @@ int main()
 		ImGui::NewFrame();
 		//----IMGUI Rendering-----------
 		//
-		ImGui::Begin("Debug");
+		ImGui::Begin("Scene");
+		ImGui::Spacing();
+		ImGui::Spacing();
+		ImGui::Text("Light");
+		ImGui::Text("0:Directional");
+		ImGui::Text("1:Point");
+		ImGui::Text("2:Spot");
+		ImGui::SliderInt("Light Type",&lightType,0,2);
+		ImGui::Checkbox("Blin Phong / Phong", &blinPhong);
 		ImGui::SliderFloat3("Light Pos", &light.transform.position.x,-10,10);
+		ImGui::SliderFloat3("Light Color", &light.color.x,0,1);
+		ImGui::SliderFloat("Ambient", &ambient,0,1);
+		ImGui::SliderFloat("Specular", &specular,0,1);
+		ImGui::SliderFloat("Specular Power", &specularPower,0,512);
+		ImGui::Spacing();
+		ImGui::Spacing();
+		ImGui::Text("Render");
+		ImGui::Spacing();
+		ImGui::Spacing();
+		ImGui::Checkbox("Normal Map", &normalMap);
+		ImGui::Checkbox("Ambient Occlusion", &ao);
+		ImGui::Spacing();
+		ImGui::Spacing();
+		ImGui::Text("Post Processing");
+		ImGui::Checkbox("HDR", &hdr);
+		ImGui::Checkbox("Bloom", &bloom);
+		ImGui::SliderFloat("Bloom Intensity", &bloomIntensity,0,10);
+		ImGui::SliderFloat("Gamma", &gamma,0,5);
+		ImGui::SliderFloat("Exposure", &exposure,0,100);
+		ImGui::Spacing();
+		ImGui::Spacing();
 		ImGui::End();
 
 		//

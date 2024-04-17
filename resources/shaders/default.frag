@@ -28,6 +28,8 @@ uniform int blinnPhong = 1;
 uniform int shadowMapping =	0;
 uniform int useNormalMap = 0;
 uniform int useAmbientOcclusion = 1;
+uniform int lightType = 0; //1 point, 2, spotlight
+uniform bool fog = false;
 
 
 
@@ -35,7 +37,7 @@ vec4 pointLight()
 {
 	vec3 ligtVec = vLightPos - currentPos;
 	float d = length(ligtVec);
-	float a = 3.0;
+	float a = 2.0;
 	float b = 0.7;
 	float attenuation = 1.0f/(a * d * d + b * d + 1f);
 	vec3 normalizedNormal = normalize(normal);
@@ -231,16 +233,27 @@ float logisticDepth(float depth, float steepness=0.5f, float offset =5.0f)
 }
 void main()
 {
-	//for fog
-	//FragColor = directionalLight();
-	//float depth  = logisticDepth(gl_FragCoord.z);
-	//FragColor = directionalLight() * (1.0f - depth) + vec4(depth * vec3(0.85f, 0.85f, 0.90f), 1.0f);
-	//----
-	FragColor = pointLight();
-
-	float brightness = dot(FragColor.rgb, vec3(0.2126f, 0.7152f,0.0722f));
-	if(brightness > 0.15)
-		BloomColor = vec4(FragColor.rgb,1.0);
+	if(fog)
+	{
+		//FragColor = directionalLight();
+		float depth  = logisticDepth(gl_FragCoord.z);
+		FragColor = directionalLight() * (1.0f - depth) + vec4(depth * vec3(0.85f, 0.85f, 0.90f), 1.0f);
+	}
 	else
-		BloomColor = vec4(0.0f,0.0f,0.0f,1.0f);
+	{
+		if(lightType == 0)
+			FragColor = directionalLight();
+		else if(lightType == 1)
+			FragColor = pointLight();
+		else if(lightType == 2)
+			FragColor = spotLight();
+
+		float brightness = dot(FragColor.rgb, vec3(0.2126f, 0.7152f,0.0722f));
+		if(brightness > 0.15)
+			BloomColor = vec4(FragColor.rgb,1.0);
+		else
+			BloomColor = vec4(0.0f,0.0f,0.0f,1.0f);
+	}
+
+	
 };
